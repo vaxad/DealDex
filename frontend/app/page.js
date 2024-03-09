@@ -74,7 +74,7 @@ export default function Home() {
             platforms.
           </p>
 <Link href="/search">
-          <div className=" relative w-max mx-auto gap-2">
+          <div className=" pointer-events-none cursor-pointer relative w-max mx-auto gap-2">
             <input
               type="search"
               name=""

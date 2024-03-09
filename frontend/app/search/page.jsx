@@ -1,8 +1,36 @@
-import React from "react";
-import data from "../../utils/data";
+"use client"
+import React, { useEffect } from "react";
+import data from "../../utils/data2.json";
 import { CardBody, CardContainer, CardItem } from "../../components/ui/3d-card";
+import Loading from "../components/Loading"
 import Link from "next/link";
 const page = () => {
+  const url = process.env.NEXT_PUBLIC_API_URL;
+  const [search, setSearch] = React.useState("");
+  const [loading, setLoading] = React.useState(true);
+  const [searchData, setSearchData] = React.useState([]);
+
+  const getData = async() => {
+    const res = await fetch(`${url}/api/price/`);
+    const data = await res.json();
+    console.log(data);
+    setSearchData(data);
+    setLoading(false);
+  }
+
+  useEffect(() => {
+    getData()
+  }, [])
+  
+  const handleSubmit = async(e) => {
+    setLoading(true);
+    e.preventDefault()
+    const res = await fetch(`${url}/api/price/find/${search}`);
+    const data = await res.json();
+    console.log(data);
+    setSearchData(data);
+    setLoading(false);
+  }
   return (
     <>
       <div className="px-10 max-sm:px-4">
@@ -18,11 +46,13 @@ const page = () => {
           <p className="text-zinc-500 mt-2 dark:text-zinc-400">
             Search for the products you want to compare
           </p>
-          <div className=" relative w-max mt-6 gap-2">
+          <form onSubmit={(e)=>{handleSubmit(e)}} className=" relative w-max mt-6 gap-2">
             <input
               type="search"
               name=""
               id="search"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
               placeholder="Search for ranges of products"
               className=" outline-none text-[#F3FF74] rounded-full px-8 max-sm:px-4 max-sm:w-72 max-sm:text-xs py-3 w-96"
             />
@@ -39,22 +69,34 @@ const page = () => {
                 fill="#F3FF74"
               />
             </svg>
-          </div>
+          </form>
         </div>
         <div className="mt-10">
           <h1 className="text-4xl max-sm:text-2xl font-bold text-zinc-500 dark:text-zinc-200">
             Popular Searches
           </h1>
-          <div className="mt-4 flex w-fit flex-wrap flex-row gap-20 max-md:gap-10 max-sm:gap-6">
-            {data.map((item) => (
-              <CardContainer className="inter-var">
-                <CardBody className="bg-gray-50 relative group/card  dark:hover:shadow-2xl dark:hover:shadow-emerald-500/[0.1] dark:bg-black dark:border-white/[0.2] border-black/[0.1] w-auto sm:w-[30rem] h-fit rounded-xl p-6 border  ">
-                  <CardItem translateZ="100" className="w-full mt-4">
+          <div className=" pt-5 pb-24  w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12">
+            {loading?
+            <div className=" col-span-1 md:col-span-2 lg:col-span-3">
+            <Loading/>
+            </div>
+            :
+            searchData.map((item) => (
+              <CardContainer key={item._id} className="inter-var">
+                <CardBody className="bg-gray-50 relative group/card  dark:hover:shadow-2xl dark:hover:shadow-emerald-500/[0.1] dark:bg-black dark:border-white/[0.2] border-black/[0.1] w-full h-fit rounded-xl p-6 border  ">
+                  <CardItem translateZ="100" className="w-full h-60 my-5  relative rounded-xl flex overflow-clip">
+                  <img
+                      src={item.images[0]}
+                      height="1000"
+                      width="1000"
+                      className="  top-0 w-full absolute blur-sm opacity-60 -z-10 object-contain mb-2 rounded-xl group-hover/card:shadow-xl"
+                      alt="thumbnail"
+                    />
                     <img
                       src={item.images[0]}
                       height="1000"
                       width="1000"
-                      className="h-60 w-full object-contain mb-2 rounded-xl group-hover/card:shadow-xl"
+                      className="  top-0 h-full object-contain mb-2 rounded-xl group-hover/card:shadow-xl"
                       alt="thumbnail"
                     />
                   </CardItem>
@@ -89,13 +131,16 @@ const page = () => {
                     >
                       Visit →
                     </CardItem>
+                    <Link href={`/search/${item._id}`} className=" flex w-6/12">
                     <CardItem
                       translateZ={20}
                       as="button"
-                      className="px-4 py-4 flex items-center justify-center mx-auto text-center w-6/12 rounded-xl bg-black dark:bg-white dark:text-black text-white text-md font-bold"
+                      
+                      className="px-4 py-4 flex items-center justify-center mx-auto text-center w-full  rounded-xl bg-black dark:bg-white dark:text-black text-white text-md font-bold"
                     >
                       Compare <img src="/compare.png" alt="" />
                     </CardItem>
+                    </Link>
                   </div>
                 </CardBody>
               </CardContainer>
