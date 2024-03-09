@@ -22,7 +22,7 @@ export default function RootLayout({ children }) {
             enableSystem
             disableTransitionOnChange
           >
-            <AuthChecker/>
+            {/* <AuthChecker/> */}
             <Navbar />
             {children}
           
