@@ -9,7 +9,7 @@ export default function Home() {
       title: "Scraping",
       value: "Realtime Webscraping",
       content: (
-        <div className="w-full overflow-hidden relative h-full rounded-2xl p-10 text-xl max-md:sm font-bold text-white bg-gradient-to-br from-purple-700 to-violet-900 mb-4">
+        <div className="w-full overflow-hidden relative h-full rounded-2xl p-10 text-xl max-md:sm font-bold text-white bg-gradient-to-br from-green-700 to-violet-900 mb-4">
           <p>Realtime Webscraping that allows the user to compare prices from famous sites like Amazon, Ebay, Flipkart etc..</p>
           <DummyContent />
         </div>
@@ -19,7 +19,7 @@ export default function Home() {
       title: "Services",
       value: "services",
       content: (
-        <div className="w-full overflow-hidden relative h-full rounded-2xl p-10 text-xl md:text-4xl font-bold text-white bg-gradient-to-br from-purple-700 to-violet-900">
+        <div className="w-full overflow-hidden relative h-full rounded-2xl p-10 text-xl md:text-4xl font-bold text-white bg-gradient-to-br from-blue-700 to-violet-900">
           <p>Services tab</p>
           <DummyContent />
         </div>
@@ -29,7 +29,7 @@ export default function Home() {
       title: "Playground",
       value: "playground",
       content: (
-        <div className="w-full overflow-hidden relative h-full rounded-2xl p-10 text-xl md:text-4xl font-bold text-white bg-gradient-to-br from-purple-700 to-violet-900">
+        <div className="w-full overflow-hidden relative h-full rounded-2xl p-10 text-xl md:text-4xl font-bold text-white bg-gradient-to-br from-gray-700 to-violet-900">
           <p>Playground tab</p>
           <DummyContent />
         </div>
@@ -39,7 +39,7 @@ export default function Home() {
       title: "Content",
       value: "content",
       content: (
-        <div className="w-full overflow-hidden relative h-full rounded-2xl p-10 text-xl md:text-4xl font-bold text-white bg-gradient-to-br from-purple-700 to-violet-900">
+        <div className="w-full overflow-hidden relative h-full rounded-2xl p-10 text-xl md:text-4xl font-bold text-white bg-gradient-to-br from-yellow-700 to-violet-900">
           <p>Content tab</p>
           <DummyContent />
         </div>
@@ -118,8 +118,8 @@ export default function Home() {
               x2="252"
               y2="453.5"
               gradientUnits="userSpaceOnUse">
-              <stop stop-color="#2E2E2E" />
-              <stop offset="1" stop-color="#606060" />
+              <stop stopColor="#2E2E2E" />
+              <stop offset="1" stopColor="#606060" />
             </linearGradient>
           </defs>
         </svg>
