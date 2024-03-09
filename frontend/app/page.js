@@ -74,7 +74,7 @@ export default function Home() {
             platforms.
           </p>
 <Link href="/search">
-          <div className=" relative w-max mx-auto gap-2">
+          <div className=" pointer-events-none cursor-pointer relative w-max mx-auto gap-2">
             <input
               type="search"
               name=""
@@ -118,8 +118,8 @@ export default function Home() {
               x2="252"
               y2="453.5"
               gradientUnits="userSpaceOnUse">
-              <stop stop-color="#2E2E2E" />
-              <stop offset="1" stop-color="#606060" />
+              <stop stopColor="#2E2E2E" />
+              <stop offset="1" stopColor="#606060" />
             </linearGradient>
           </defs>
         </svg>
