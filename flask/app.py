@@ -28,8 +28,11 @@ from langchain.chains.question_answering import load_qa_chain
 from langchain.prompts import PromptTemplate
 from bs4 import BeautifulSoup
 import re
+import PIL
+from flask_cors import CORS
 
 app = Flask(__name__) 
+CORS(app)
 
 #ENV Variables
 load_dotenv()
@@ -484,6 +487,24 @@ def get_amazon_promo_codes():
 
     return jsonify(data)
 
+@app.route('/category_detect', methods=['POST'])
+def category_detect():
+    try:
+        image_url = request.json.get('image_url')
+        image_response = requests.get(image_url)
+        image_response.raise_for_status() 
+        image_file = PIL.Image.open(BytesIO(image_response.content))
+        image_file.save("temp_image.jpg")
+        img = PIL.Image.open('temp_image.jpg')
+        model = genai.GenerativeModel('gemini-pro-vision')
+        result = model.generate_content([img, "If the given image has footwear, eyewear, or wristwear give category name(footwear or eyewear or wristwear). Otherwise, return none"], stream=True)
+        result.resolve()
+        os.remove("temp_image.jpg")
+        print(result.text)
+        return jsonify({'result': result.text})
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+    
 @app.route('/', methods=['GET']) 
 def defaultroute(): 
 	if(request.method == 'GET'): 
