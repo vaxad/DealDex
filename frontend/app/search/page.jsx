@@ -122,6 +122,17 @@ const page = () => {
                       {item.description}
                     </CardItem>
                     <CardItem
+                      as="p"
+                      translateZ="60"
+                      className="text-neutral-500 text-sm max-w-sm mb-6 dark:text-neutral-300"
+                    >
+                      <Link href={item.brand} className="flex gap-1">
+                        {" "}
+                        <span> source: </span>
+                        <div className="underline">{item.brand}</div>{" "}
+                      </Link>
+                    </CardItem>
+                    <CardItem
                       translateZ="50"
                       className="text-2xl font-bold text-neutral-600 dark:text-white"
                     >
@@ -135,13 +146,15 @@ const page = () => {
                       )}
                     </CardItem>
                     <div className="flex justify-around items-center mt-2 gap-2">
-                      <CardItem
-                        translateZ={20}
-                        as="button"
-                        className="px-4 py-4 w-6/12 rounded-xl text-md font-normal dark:text-white border "
-                      >
-                        Visit →
-                      </CardItem>
+                      <Link href={item.link} target="_blank" className="w-6/12">
+                        <CardItem
+                          translateZ={20}
+                          as="button"
+                          className="px-4 py-4 w-full rounded-xl text-md font-normal dark:text-white border "
+                        >
+                          Visit →
+                        </CardItem>
+                      </Link>
                       <Link
                         href={`/search/${item._id}`}
                         className=" flex w-6/12"
