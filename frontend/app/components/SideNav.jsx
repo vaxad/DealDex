@@ -1,5 +1,5 @@
 "use client"
-import store from '@/lib/zustand'
+import store from '../../lib/zustand'
 import { LogOutIcon } from 'lucide-react'
 import Link from 'next/link'
 import React from 'react'
