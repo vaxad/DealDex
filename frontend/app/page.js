@@ -2,6 +2,7 @@ import React from "react";
 import { WavyBackground } from "../components/ui/wavy-background";
 import Image from "next/image";
 import { Tabs } from "../components/ui/tabs";
+import Link from "next/link";
 export default function Home() {
   const tabs = [
     {
@@ -72,7 +73,7 @@ export default function Home() {
             product price tracking and comparison tool across various e-commerce
             platforms.
           </p>
-
+<Link href="/search">
           <div className=" relative w-max mx-auto gap-2">
             <input
               type="search"
@@ -94,6 +95,7 @@ export default function Home() {
               />
             </svg>
           </div>
+          </Link>
           </WavyBackground>
         </div>
 
@@ -122,7 +124,8 @@ export default function Home() {
           </defs>
         </svg>
       </div>
-      <div className="h-[20rem] md:h-[40rem] [perspective:1000px] relative b flex flex-col max-w-5xl mx-auto w-full  items-start justify-start my-40">
+      <div className="h-[20rem] md:h-[40rem] [perspective:1000px] relative b flex flex-col max-w-5xl mx-auto w-full  items-start justify-start mb-40 mt-20">
+        <div className="text-7xl max-sm:text-4xl font-semibold text-center mx-auto mb-8">Edge Cutting Features</div>
       <Tabs tabs={tabs} />
     </div>
     </div>
@@ -134,9 +137,9 @@ const DummyContent = () => {
     <Image
       src="/linear.png"
       alt="dummy image"
-      width="1000"
-      height="1000"
-      className="object-cover object-left-top h-[60%]  md:h-[90%] absolute -bottom-10 inset-x-0 w-[90%] rounded-xl mx-auto"
+      width="700"
+      height="700"
+      className="object-cover object-left-top h-[60%] mt-4 md:h-[90%] absolute -bottom-10 inset-x-0 w-[90%] rounded-xl mx-auto"
     />
   );
 };
@@ -145,8 +148,8 @@ const DummyContent2 = () => {
     <Image
       src="/linear.png"
       alt="dummy image"
-      width="1000"
-      height="1000"
+      width="700"
+      height="700"
       className="object-cover object-left-top h-[60%]  md:h-[90%] absolute -bottom-10 inset-x-0 w-[90%] rounded-xl mx-auto"
     />
   );
@@ -156,8 +159,8 @@ const DummyContent3 = () => {
     <Image
       src="/linear.png"
       alt="dummy image"
-      width="1000"
-      height="1000"
+      width="700"
+      height="700"
       className="object-cover object-left-top h-[60%]  md:h-[90%] absolute -bottom-10 inset-x-0 w-[90%] rounded-xl mx-auto"
     />
   );

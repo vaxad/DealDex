@@ -30,7 +30,7 @@ export default function Navbar({ children }) {
   const { auth } = store();
   return (
     <>
-      <div className=" flex fixed top-0 h-[10vh] z-30 border-b flex-row w-full px-4 py-4 gap-8 items-center justify-between dark:bg-transparent bg-slate-200 bg-clip-padding backdrop-filter backdrop-blur-md bg-opacity-10  ">
+      <div className="sticky flex top-0 h-[10vh] z-30 border-b flex-row w-full px-4 py-4 gap-8 items-center justify-between dark:bg-transparent bg-slate-200 bg-clip-padding backdrop-filter backdrop-blur-md bg-opacity-10  ">
         <Link
           href="/"
           className=" flex items-center rounded-lg px-3 py-2 text-slate-900 dark:text-white"
