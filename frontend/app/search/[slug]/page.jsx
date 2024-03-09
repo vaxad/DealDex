@@ -37,29 +37,62 @@ const page = ({ params: { slug } }) => {
         </div>
         {product && (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="w-full my-2 grid grid-cols-1 md:grid-cols-2 rounded-xl bg-gradient-to-b from-zinc-900 border border-zinc-800 to-black h-96 max-h-fit">
-              <div className="border h-fit">
-                <div className="w-full h-60 my-5  relative rounded-xl flex overflow-clip">
+            <div className="w-full my-2 grid grid-cols-1 md:grid-cols-2 rounded-xl bg-gradient-to-b from-zinc-900 border border-zinc-800 to-black h-fit ">
+              <div className="h-full flex items-center">
+                <div className="w-full h-96 relative rounded-l-xl items-center flex overflow-clip">
                   <img
                     src={product.images}
-                    height="1000"
-                    width="1000"
-                    className="  top-0 w-full absolute blur-sm opacity-60 -z-10 object-contain mb-2 rounded-xl group-hover/card:shadow-xl"
+                    className="  top-0 w-full absolute blur-sm opacity-60 h-full object-cover mb-2 rounded-xl group-hover/card:shadow-xl"
                     alt="thumbnail"
                   />
                   <img
                     src={product.images}
-                    height="1000"
-                    width="1000"
-                    className="  top-0 h-full object-contain mb-2 rounded-xl group-hover/card:shadow-xl"
+                    className="  top-0 h-full object-contain mb-2 z-10 rounded-xl group-hover/card:shadow-xl"
                     alt="thumbnail"
                   />
                 </div>
               </div>
-              <div></div>
+              <div className="p-4">
+                <div className="text-2xl leading-normal font-bold text-zinc-500 dark:text-zinc-200 line-clamp-2">
+                  {product.name}
+                </div>
+                <div className="text-zinc-500 text-sm max-w-sm mb-6 dark:text-zinc-400 line-clamp-6 mt-4 leading-relaxed">
+                  {product.description}
+                </div>
+                <div className="text-2xl font-bold text-zinc-500 dark:text-zinc-200 ">
+                  {product.prices && (
+                    <>
+                      <span>
+                        Rs{" "}
+                        {Math.floor(
+                          parseFloat(product.prices[0].price.replace(/\,/g, ""))
+                        )}{" "}
+                        /-
+                      </span>
+                      <Link
+                        href={product.link}
+                        target="_blank"
+                        className="w-6/12"
+                      >
+                        <div
+                          translateZ={20}
+                          as="button"
+                          className="px-4 py-2 text-sm mt-2 w-fit bg-white rounded-md text-md font-normal dark:text-black border "
+                        >
+                          Read more →
+                        </div>
+                      </Link>
+                    </>
+                  )}
+                </div>
+              </div>
             </div>
             <div className="w-full my-2 rounded-xl bg-black h-96 flex justify-center items-center cursor-pointer">
-              <div className="mx-auto text-center"> + Add to compare</div>
+              <div className="mx-auto text-center flex ">
+                {" "}
+                <img src="/compare.png" alt="" className="mr-2 invert" /> Add to
+                compare
+              </div>
             </div>
           </div>
         )}
@@ -110,6 +143,17 @@ const page = ({ params: { slug } }) => {
                       {item.description}
                     </CardItem>
                     <CardItem
+                      as="p"
+                      translateZ="60"
+                      className="text-neutral-500 text-sm max-w-sm mb-6 dark:text-neutral-300"
+                    >
+                      <Link href={item.brand} className="flex gap-1">
+                        {" "}
+                        <span> source: </span>
+                        <div className="underline">{item.brand}</div>{" "}
+                      </Link>
+                    </CardItem>
+                    <CardItem
                       translateZ="50"
                       className="text-2xl font-bold text-neutral-600 dark:text-white"
                     >
@@ -123,13 +167,15 @@ const page = ({ params: { slug } }) => {
                       )}
                     </CardItem>
                     <div className="flex justify-around items-center mt-2 gap-2">
-                      <CardItem
-                        translateZ={20}
-                        as="button"
-                        className="px-4 py-4 w-6/12 rounded-xl text-md font-normal dark:text-white border "
-                      >
-                        Visit →
-                      </CardItem>
+                      <Link href={item.link} target="_blank" className="w-6/12">
+                        <CardItem
+                          translateZ={20}
+                          as="button"
+                          className="px-4 py-4 w-full rounded-xl text-md font-normal dark:text-white border "
+                        >
+                          Visit →
+                        </CardItem>
+                      </Link>
                       <Link
                         href={`/search/${item._id}`}
                         className=" flex w-6/12"
