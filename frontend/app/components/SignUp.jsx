@@ -1,11 +1,11 @@
 "use client"
-import { Label } from "@/components/ui/label"
-import { Input } from "@/components/ui/input"
-import { Button } from "@/components/ui/button"
-import { CardContent, Card } from "@/components/ui/card"
+import { Label } from "../../components/ui/label"
+import { Input } from "../../components/ui/input"
+import { Button } from "../../components/ui/button"
+import { CardContent, Card } from "../../components/ui/card"
 import { useState } from "react"
 import { toast } from "sonner"
-import store from "@/lib/zustand"
+import store from "../../lib/zustand"
 
 export default function SignUp() {
   const [name, setName] = useState("")

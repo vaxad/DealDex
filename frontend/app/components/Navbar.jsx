@@ -1,4 +1,5 @@
 "use client";
+import React from "react";
 import {
   Menubar,
   MenubarCheckboxItem,
@@ -13,13 +14,11 @@ import {
   MenubarSubContent,
   MenubarSubTrigger,
   MenubarTrigger,
-} from "@/components/ui/menubar";
-import React from "react";
-import SideNav from "./SideNav";
-import { ModeToggle } from "@/components/ui/theme-toggle";
+} from "../../components/ui/menubar";
+import { ModeToggle } from "../../components/ui/theme-toggle";
 import SideNavToggle from "./SideNavToggle";
 import Link from "next/link";
-import store from "@/lib/zustand";
+import store from "../../lib/zustand";
 import { useState } from "react";
 
 export default function Navbar({ children }) {

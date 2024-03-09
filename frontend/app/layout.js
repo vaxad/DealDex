@@ -1,6 +1,6 @@
 import { Sora } from "next/font/google";
 import "./globals.css";
-import { ThemeProvider } from "@/components/ui/theme-provider"
+import { ThemeProvider } from "../components/ui/theme-provider"
 import SideNav from "./components/SideNav";
 import Navbar from "./components/Navbar";
 import AuthChecker from "./components/AuthChecker";
