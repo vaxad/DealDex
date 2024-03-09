@@ -23,9 +23,9 @@ export default function RootLayout({ children }) {
             disableTransitionOnChange
           >
             <AuthChecker/>
-            <Navbar>
+            <Navbar />
             {children}
-            </Navbar>
+          
           </ThemeProvider></body>
     </html>
   );
