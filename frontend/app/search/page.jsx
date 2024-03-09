@@ -36,7 +36,7 @@ const page = () => {
       <div className="px-10 max-sm:px-4">
         <Link href="/">
           <div className="rounded-full border items-center flex bg-black shadow-md px-2 py-1 mt-2 text-sm w-fit">
-            <img src="/back.png" alt="" className="mr-1" /> Back
+            <img src="/back.png" alt="" className="mr-1" /> Home
           </div>
         </Link>
         <div className="mt-2">
@@ -164,7 +164,8 @@ const page = () => {
                           as="button"
                           className="px-4 py-4 flex items-center justify-center mx-auto text-center w-full  rounded-xl bg-black dark:bg-white dark:text-black text-white text-md font-bold"
                         >
-                          Compare <img src="/compare.png" alt="" />
+                          Expand{" "}
+                          <img src="/expand.png" alt="" className="ml-2" />
                         </CardItem>
                       </Link>
                     </div>

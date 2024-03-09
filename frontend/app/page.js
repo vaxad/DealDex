@@ -62,7 +62,7 @@ export default function Home() {
         className="min-h-[90vh] text-center grid place-items-center overflow-clip"
         id="hero">
         <div className=" flex w-full flex-col justify-center items-center">
-          <WavyBackground>
+          <WavyBackground className="-mt-36">
           <h1 className="px-2 font-bold max-sm:text-3xl max-sm:leading-snug" id="heading">
             Track the Price$
             <br />

@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import {
   CardBody,
   CardContainer,
@@ -7,7 +7,67 @@ import {
 } from "../../../components/ui/3d-card";
 import Loading from "../../components/Loading";
 import Link from "next/link";
+import { Chart, Line } from "react-chartjs-2";
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LineElement,
+  PointElement,
+  LinearScale,
+} from "chart.js";
+ChartJS.register(CategoryScale, LineElement, PointElement, LinearScale);
 const page = ({ params: { slug } }) => {
+  const chartData = {
+    labels: [
+      "2023-01-01",
+      "2023-02-05",
+      "2023-03-12",
+      "2023-04-18",
+      "2023-05-24",
+      "2023-06-29",
+      "2023-08-04",
+      "2023-09-09",
+      "2023-10-15",
+      "2023-11-21",
+      "2023-12-27",
+      "2024-01-02",
+      "2024-02-08",
+      "2024-03-14",
+      "2024-04-19",
+      "2024-05-25",
+      "2024-06-30",
+      "2024-08-05",
+      "2024-09-10",
+      "2024-10-16",
+    ],
+    datasets: [
+      {
+        label: "Demo Line",
+        data: [
+          18999, 23500, 19500, 19750, 20000, 23000, 20500, 20750, 21000, 21250,
+          21500, 21750, 22000, 22250, 22500, 19500, 23000, 23250, 23500, 18999,
+        ],
+        fill: false,
+        backgroundColor: "rgb(255, 99, 132)",
+        borderColor: "rgba(255, 99, 132, 0.2)",
+      },
+    ],
+  };
+
+  const options = {
+    plugins: {
+      legend: {
+        display: true,
+        position: "top",
+      },
+      title: {
+        display: true,
+        text: "Line Chart",
+      },
+    },
+  };
+  const [compare, setCompare] = useState(false);
+  const [userData, setUserData] = useState({});
   const [data, setData] = React.useState([]);
   const [product, setProduct] = React.useState({});
   const [loading, setLoading] = React.useState(true);
@@ -23,11 +83,21 @@ const page = ({ params: { slug } }) => {
   useEffect(() => {
     getData();
   }, []);
-
+  const handleScrollToProducts = () => {
+    const productsDiv = document.querySelector("#products");
+    if (productsDiv) {
+      productsDiv.scrollIntoView({ behavior: "smooth" });
+    }
+  };
   return (
     <>
       <div className="px-10 max-sm:px-4">
-        <div className="mt-10">
+        <Link href="/search">
+          <div className="rounded-full border items-center flex bg-black shadow-md px-2 py-1 mt-2 text-sm w-fit">
+            <img src="/back.png" alt="" className="mr-1" /> Search
+          </div>
+        </Link>
+        <div className="mt-4">
           <h1 className="text-4xl max-sm:text-2xl font-bold text-zinc-500 dark:text-zinc-200">
             Products Comparison:
           </h1>
@@ -37,68 +107,96 @@ const page = ({ params: { slug } }) => {
         </div>
         {product && (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="w-full my-2 grid grid-cols-1 md:grid-cols-2 rounded-xl bg-gradient-to-b from-zinc-900 border border-zinc-800 to-black h-fit ">
-              <div className="h-full flex items-center">
-                <div className="w-full h-96 relative rounded-l-xl items-center flex overflow-clip">
-                  <img
-                    src={product.images}
-                    className="  top-0 w-full absolute blur-sm opacity-60 h-full object-cover mb-2 rounded-xl group-hover/card:shadow-xl"
-                    alt="thumbnail"
-                  />
-                  <img
-                    src={product.images}
-                    className="  top-0 h-full object-contain mb-2 z-10 rounded-xl group-hover/card:shadow-xl"
-                    alt="thumbnail"
-                  />
+            <div className="w-full my-2 flex-col rounded-xl bg-gradient-to-b from-zinc-900 border border-zinc-800 to-black h-fit ">
+              <div className="flex w-full">
+                <div className="h-full flex-grow w-1/2 flex items-center">
+                  <div className="w-full h-60 relative rounded-l-xl items-center justify-center flex overflow-clip">
+                    <img
+                      src={product.images}
+                      className="  top-0 w-full absolute blur-sm opacity-60 h-full object-cover mb-2 rounded-xl group-hover/card:shadow-xl"
+                      alt="thumbnail"
+                    />
+                    <img
+                      src={product.images}
+                      className="  top-0 h-full  object-contain mb-2 z-10 rounded-xl group-hover/card:shadow-xl"
+                      alt="thumbnail"
+                    />
+                  </div>
                 </div>
-              </div>
-              <div className="p-4">
-                <div className="text-2xl leading-normal font-bold text-zinc-500 dark:text-zinc-200 line-clamp-2">
-                  {product.name}
-                </div>
-                <div className="text-zinc-500 text-sm max-w-sm mb-6 dark:text-zinc-400 line-clamp-6 mt-4 leading-relaxed">
-                  {product.description}
-                </div>
-                <div className="text-2xl font-bold text-zinc-500 dark:text-zinc-200 ">
-                  {product.prices && (
-                    <>
-                      <span>
-                        Rs{" "}
-                        {Math.floor(
-                          parseFloat(product.prices[0].price.replace(/\,/g, ""))
-                        )}{" "}
-                        /-
-                      </span>
-                      <Link
-                        href={product.link}
-                        target="_blank"
-                        className="w-6/12"
-                      >
-                        <div
-                          translateZ={20}
-                          as="button"
-                          className="px-4 py-2 text-sm mt-2 w-fit bg-white rounded-md text-md font-normal dark:text-black border "
+                <div className="p-4 w-2/3">
+                  <div className="text-2xl leading-normal font-bold text-zinc-500 dark:text-zinc-200 line-clamp-2">
+                    {product.name}
+                  </div>
+                  <div className="text-zinc-500 text-sm max-w-sm mb-6 dark:text-zinc-400 line-clamp-6 mt-4 leading-relaxed">
+                    {product.description}
+                  </div>
+                  <div className="text-2xl font-bold text-zinc-500 dark:text-zinc-200 ">
+                    {product.prices && (
+                      <>
+                        <span>
+                          Rs{" "}
+                          {Math.floor(
+                            parseFloat(
+                              product.prices[0].price.replace(/\,/g, "")
+                            )
+                          )}{" "}
+                          /-
+                        </span>
+                        <Link
+                          href={product.link}
+                          target="_blank"
+                          className="w-6/12"
                         >
-                          Read more →
-                        </div>
-                      </Link>
-                    </>
-                  )}
+                          <div
+                            translateZ={20}
+                            as="button"
+                            className="px-4 py-2 text-sm mt-2 w-fit bg-white rounded-md text-md font-normal dark:text-black border "
+                          >
+                            Read more →
+                          </div>
+                        </Link>
+                      </>
+                    )}
+                  </div>
                 </div>
               </div>
+              {product.prices ? (
+                <>
+                  <div className="p-4 w-full col-span-2">
+                    <h2 className="text-2xl mb-2">Line Graph</h2>
+                    <Line
+                      data={chartData}
+                      options={options}
+                      className="w-full"
+                    />
+                  </div>
+                </>
+              ) : null}
             </div>
-            <div className="w-full my-2 rounded-xl bg-black h-96 flex justify-center items-center cursor-pointer">
-              <div className="mx-auto text-center flex ">
-                {" "}
-                <img src="/compare.png" alt="" className="mr-2 invert" /> Add to
-                compare
-              </div>
-            </div>
+            {compare ? (
+              <div>Hello</div>
+            ) : (
+              <button
+                onClick={() => {
+                  handleScrollToProducts();
+                }}
+                className="w-full my-2 max-sm:h-fit p-4 rounded-xl border border-gray-100/30 bg-black hover:bg-zinc-900 h-96 flex justify-center items-center cursor-pointer"
+              >
+                <div className="mx-auto text-center flex">
+                  {" "}
+                  <img src="/compare.png" alt="" className="mr-2 invert" /> Add
+                  to compare
+                </div>
+              </button>
+            )}
           </div>
         )}
         <div className="mt-10">
-          <h1 className="text-4xl font-bold text-zinc-500 dark:text-zinc-200">
-            Popular Searches
+          <h1
+            id="products"
+            className="text-4xl font-bold text-zinc-500 dark:text-zinc-200"
+          >
+            Similar Products
           </h1>
 
           <div className=" pt-5 pb-24  w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12">
@@ -176,9 +274,12 @@ const page = ({ params: { slug } }) => {
                           Visit →
                         </CardItem>
                       </Link>
-                      <Link
+                      <div
                         href={`/search/${item._id}`}
-                        className=" flex w-6/12"
+                        className=" flex w-6/12 cursor-pointer"
+                        onClick={() => {
+                          setCompare(true);
+                        }}
                       >
                         <CardItem
                           translateZ={20}
@@ -187,7 +288,7 @@ const page = ({ params: { slug } }) => {
                         >
                           Compare <img src="/compare.png" alt="" />
                         </CardItem>
-                      </Link>
+                      </div>
                     </div>
                   </CardBody>
                 </CardContainer>
