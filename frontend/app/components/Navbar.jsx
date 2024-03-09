@@ -56,6 +56,24 @@ export default function Navbar({ children }) {
           <div className="hidden max-sm:block" onClick={hamburgeractive}>
             <img src="/hamburger.png" alt="" />
           </div>
+          {active && (
+            <div className="absolute mt-60 bg-black flex-col z-50 h-fit w-fit">
+              <Menubar className="flex-col h-fit w-fit px-4 py-2">
+                <MenubarMenu>
+                  <MenubarTrigger className="py-1">Home</MenubarTrigger>
+                </MenubarMenu>
+                <MenubarMenu>
+                  <MenubarTrigger className="py-1">Fashion</MenubarTrigger>
+                </MenubarMenu>
+                <MenubarMenu>
+                  <MenubarTrigger className="py-1">Food</MenubarTrigger>
+                </MenubarMenu>
+                <MenubarMenu>
+                  <MenubarTrigger className="py-1">Tech</MenubarTrigger>
+                </MenubarMenu>
+              </Menubar>
+            </div>
+          )}
           {!auth ? (
             <Menubar>
               <MenubarMenu>
@@ -79,25 +97,6 @@ export default function Navbar({ children }) {
         {children}
         {/* <SideNav/> */}
       </div>
-      {active && (
-        <div className="relative bg-black p-4 flex-col z-50">
-          jellp
-          <Menubar>
-            <MenubarMenu>
-              <MenubarTrigger>Home</MenubarTrigger>
-            </MenubarMenu>
-            <MenubarMenu>
-              <MenubarTrigger>Fashion</MenubarTrigger>
-            </MenubarMenu>
-            <MenubarMenu>
-              <MenubarTrigger>Food</MenubarTrigger>
-            </MenubarMenu>
-            <MenubarMenu>
-              <MenubarTrigger>Tech</MenubarTrigger>
-            </MenubarMenu>
-          </Menubar>
-        </div>
-      )}
     </>
   );
 }
