@@ -121,11 +121,24 @@ const page = ({ params: { slug } }) => {
   };
   const [bigger, setBigger] = useState(-1);
   const [data, setData] = React.useState([]);
+  const [messages, setMessages] = React.useState([]);
   const [product, setProduct] = React.useState({});
   const [loading, setLoading] = React.useState(true);
+  const [msg,setMsg] = React.useState("")
   const [category, setCategory] = React.useState("");
   const url = process.env.NEXT_PUBLIC_API_URL;
   const flask = process.env.NEXT_PUBLIC_FLASK_URL;
+  const sendMsg = async() => {
+    const res = await fetch(`${url}/api/price/forum/${slug}`,{
+      method:"POST",
+      headers:{
+        "Content-Type":"application/json"
+      },
+      body:JSON.stringify({text:msg})
+    });
+    const data = await res.json();
+    setMessages([...messages,data.message]);
+  }
   async function uploadImage(url) {
     // Make a POST request with Fetch API
     try {
@@ -161,6 +174,9 @@ const page = ({ params: { slug } }) => {
 
     console.log(data);
     setLoading(false);
+    const chatres = await fetch(`${url}/api/price/forum/${slug}`);
+    const chatdata = await chatres.json();
+    setMessages(chatdata.messages);
   };
 
   useEffect(() => {
@@ -477,6 +493,31 @@ const page = ({ params: { slug } }) => {
                 </CardContainer>
               ))
             )}
+          </div>
+        </div>
+        <div className=" flex w-full flex-col gap-4">
+          <div className=" w-full py-4">
+            <h1 className=" text-2xl font-bold ">Chat Forum</h1>
+          </div>
+          <div className=" flex flex-col gap-2">
+            <div className=" flex flex-row justify-between w-full px-4 py-2 bg-lime-400">
+              <input className=" text-xl w-full font-semibold text-zinc-950" value={msg} onChange={(e)=>setMsg(e.target.value)} type="text" >
+              </input>
+              <button onClick={()=>{sendMsg()}} className=" w-fit px-2 py-1 text-md font-bold">Send</button>
+            </div>
+            {messages.map((message) => {
+              return (
+                <div className=" flex flex-col px-4 py-2 bg-lime-400 text-zinc-950">
+                  <div className=" flex flex-row w-full py-1 justify-between items-center text-zinc-950">
+                    <h3 className=" text-md font-bold text-zinc-800">{"user"}</h3>
+                    <h4 className=" text-sm font-bold text-zinc-500">{(new Date(message.createdAt)).toISOString()}</h4>
+                  </div>
+                  <h2 className=" text-lg font-medium text-zinc-950">
+                    {message.text}
+                  </h2>
+                </div>
+              )
+            })}
           </div>
         </div>
       </div>
