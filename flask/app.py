@@ -9,6 +9,8 @@ from twilio.twiml.messaging_response import MessagingResponse
 from selectorlib import Extractor
 import requests
 import json
+import csv
+from dateutil import parser as dateparser
 
 app = Flask(__name__) 
 
@@ -18,6 +20,7 @@ S3_BUCKET = os.getenv('S3_BUCKET')
 TWILIO_ACCOUNT_SID = os.getenv('TWILIO_ACCOUNT_SID')
 TWILIO_AUTH_TOKEN = os.getenv('TWILIO_AUTH_TOKEN')
 TWILIO_PHONE_NUMBER = os.getenv('TWILIO_PHONE_NUMBER')
+e = Extractor.from_yaml_file('amazonreviewselectors.yml')
 
 #CLIENTS
 client = Client(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN)
@@ -32,7 +35,31 @@ def create_extractor(url):
         return Extractor.from_yaml_file('selectorsFlipkart.yml')
     elif("ebay" in url):
         return Extractor.from_yaml_file('selectorsEbay.yml')
-    
+
+def review_scrape(url):
+    headers = {
+        'authority': 'www.amazon.com',
+        'pragma': 'no-cache',
+        'cache-control': 'no-cache',
+        'dnt': '1',
+        'upgrade-insecure-requests': '1',
+        'user-agent': 'Mozilla/5.0 (X11; CrOS x86_64 8172.45.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.64 Safari/537.36',
+        'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9',
+        'sec-fetch-site': 'none',
+        'sec-fetch-mode': 'navigate',
+        'sec-fetch-dest': 'document',
+        'accept-language': 'en-GB,en-US;q=0.9,en;q=0.8',
+    }
+    print("Downloading %s" % url)
+    r = requests.get(url, headers=headers)
+    if r.status_code > 500:
+        if "To discuss automated access to Amazon data please contact" in r.text:
+            print("Page %s was blocked by Amazon. Please try using better proxies\n" % url)
+        else:
+            print("Page %s must have been blocked by Amazon as the status code was %d" % (url, r.status_code))
+        return None
+    return e.extract(r.text)
+
 #API Routes
 @app.route('/upload', methods=['POST'])
 def upload_file():
@@ -206,7 +233,36 @@ def scrape():
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+@app.route('/scrape_amazon_reviews', methods=['POST'])
+def scrape_amazon_reviews():
+    url = request.form.get('url')
+    if not url:
+        return jsonify({'error': 'URL not provided'}), 400
+
+    reviews_data = []  
     
+    data = review_scrape(url) 
+    if data and 'reviews' in data:
+        for r in data['reviews']:
+            review = {}
+            review["title"] = r.get("title", "")
+            review["content"] = r.get("content", "")
+            review["date"] = r.get("date", "")
+            review["variant"] = r.get("variant", "")
+            review["images"] = "\n".join(r.get("images", [])) if r.get("images") else ""  # Join images if available
+            review["verified"] = "Yes" if 'verified' in r and 'Verified Purchase' in r['verified'] else "No"
+            review["author"] = r.get("author", "")
+            review["rating"] = r.get("rating", "").split(' out of')[0]
+            review["product"] = data.get("product_title", "")
+            review["url"] = url
+            
+            date_posted = review['date'].split('on ')[-1]
+            review['date'] = dateparser.parse(date_posted).strftime('%d %b %Y')
+            
+            reviews_data.append(review)
+
+    return jsonify({'reviews': reviews_data}), 200
+
 @app.route('/', methods=['GET']) 
 def defaultroute(): 
 	if(request.method == 'GET'): 
