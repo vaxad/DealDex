@@ -53,7 +53,42 @@ const page = ({ params: { slug } }) => {
       },
     ],
   };
-
+  const chartData2 = {
+    labels: [
+      "2023-01-01",
+      "2023-02-05",
+      "2023-03-12",
+      "2023-04-18",
+      "2023-05-24",
+      "2023-06-29",
+      "2023-08-04",
+      "2023-09-09",
+      "2023-10-15",
+      "2023-11-21",
+      "2023-12-27",
+      "2024-01-02",
+      "2024-02-08",
+      "2024-03-14",
+      "2024-04-19",
+      "2024-05-25",
+      "2024-06-30",
+      "2024-08-05",
+      "2024-09-10",
+      "2024-10-16",
+    ],
+    datasets: [
+      {
+        label: "Demo Line",
+        data: [
+          18999, 19500, 19500, 19750, 19500, 19500, 20500, 20750, 21000, 21250,
+          19500, 21750, 19500, 19500, 19500, 19500, 19500, 19500, 23500, 18999,
+        ],
+        fill: false,
+        backgroundColor: "rgba(111, 14, 141, 1)",
+        borderColor: "rgba(0, 14, 141, 0.5)",
+      },
+    ],
+  };
   const options = {
     plugins: {
       legend: {
@@ -77,7 +112,14 @@ const page = ({ params: { slug } }) => {
     const res = await fetch(`${url}/api/price/fetch/${slug}`);
     const data = await res.json();
     setProduct(data.product);
+    data.others.sort((a, b) => {
+      return (
+        parseFloat(a.prices[0].price.replace(/\,/g, "")) -
+        parseFloat(b.prices[0].price.replace(/\,/g, ""))
+      );
+    });
     setData(data.others);
+
     console.log(data);
     setLoading(false);
   };
@@ -96,6 +138,12 @@ const page = ({ params: { slug } }) => {
       productsDiv.scrollIntoView({ behavior: "smooth" });
     }
   };
+  const handleScrollToCompare = () => {
+    const productsDiv = document.querySelector("#compare");
+    if (productsDiv) {
+      productsDiv.scrollIntoView({ behavior: "smooth" });
+    }
+  };
   return (
     <>
       <div className="px-10 max-sm:px-4">
@@ -105,10 +153,13 @@ const page = ({ params: { slug } }) => {
           </div>
         </Link>
         <div className="mt-4">
-          <h1 className="text-4xl max-sm:text-2xl font-bold text-zinc-500 dark:text-zinc-200">
+          <h1
+            id="compare"
+            className="text-4xl max-sm:text-2xl font-bold text-zinc-500 dark:text-zinc-200"
+          >
             Products Comparison:
           </h1>
-          <p className="text-zinc-500 mt-2 dark:text-zinc-400">
+          <p className="text-zinc-500 mt-2 mb-4 dark:text-zinc-400">
             Compare Products across websites{" "}
           </p>
         </div>
@@ -134,7 +185,7 @@ const page = ({ params: { slug } }) => {
                   <div className="text-2xl leading-normal font-bold text-zinc-500 dark:text-zinc-200 line-clamp-2">
                     {product.name}
                   </div>
-                  <div className="text-zinc-500 text-sm max-w-sm mb-6 dark:text-zinc-400 line-clamp-6 mt-4 leading-relaxed">
+                  <div className="text-zinc-500 text-sm max-w-sm mb-4 dark:text-zinc-400 line-clamp-2 mt-2 leading-relaxed">
                     {product.description}
                   </div>
                   <div className="text-2xl font-bold text-zinc-500 dark:text-zinc-200 ">
@@ -240,7 +291,7 @@ const page = ({ params: { slug } }) => {
                       <div className="p-4 w-full col-span-2">
                         <h2 className="text-2xl mb-2">Line Graph</h2>
                         <Line
-                          data={chartData}
+                          data={chartData2}
                           options={options}
                           className="w-full"
                         />
@@ -310,7 +361,7 @@ const page = ({ params: { slug } }) => {
                     <CardItem
                       as="p"
                       translateZ="60"
-                      className="text-neutral-500 text-sm max-w-sm mb-6 dark:text-neutral-300 line-clamp-1"
+                      className="text-neutral-500 text-sm max-w-sm mb-2 dark:text-neutral-300 line-clamp-1"
                     >
                       {item.description}
                     </CardItem>
@@ -353,6 +404,7 @@ const page = ({ params: { slug } }) => {
                         className=" flex w-6/12 cursor-pointer"
                         onClick={() => {
                           setCompare(ind);
+                          handleScrollToCompare();
                         }}
                       >
                         <CardItem
