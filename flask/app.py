@@ -497,7 +497,7 @@ def category_detect():
         image_file.save("temp_image.jpg")
         img = PIL.Image.open('temp_image.jpg')
         model = genai.GenerativeModel('gemini-pro-vision')
-        result = model.generate_content([img, "If the given image has footwear, eyewear, or wristwear, then return true with category name. Otherwise, return false and result as none in a JSON response"], stream=True)
+        result = model.generate_content([img, "If the given image has footwear, eyewear, or wristwear give category name(footwear or eyewear or wristwear). Otherwise, return none"], stream=True)
         result.resolve()
         os.remove("temp_image.jpg")
         print(result.text)
