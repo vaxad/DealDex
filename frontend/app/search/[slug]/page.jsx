@@ -66,7 +66,8 @@ const page = ({ params: { slug } }) => {
       },
     },
   };
-  const [compare, setCompare] = useState(false);
+  const [compare, setCompare] = useState(-1);
+  const [item, setItem] = useState({});
   const [userData, setUserData] = useState({});
   const [data, setData] = React.useState([]);
   const [product, setProduct] = React.useState({});
@@ -80,6 +81,12 @@ const page = ({ params: { slug } }) => {
     console.log(data);
     setLoading(false);
   };
+
+  useEffect(() => {
+    if (compare !== -1) {
+      setItem(data[compare]);
+    }
+  }, [compare]);
   useEffect(() => {
     getData();
   }, []);
@@ -173,8 +180,75 @@ const page = ({ params: { slug } }) => {
                 </>
               ) : null}
             </div>
-            {compare ? (
-              <div>Hello</div>
+            {compare !== -1 ? (
+              <div className="grid grid-cols-1 gap-4 w-full">
+                <div className="w-full my-2 flex-col rounded-xl bg-gradient-to-b from-zinc-900 border border-zinc-800 to-black h-fit ">
+                  <div className="flex w-full">
+                    <div className="h-full flex-grow w-1/2 flex items-center">
+                      <div className="w-full h-60 relative rounded-l-xl items-center justify-center flex overflow-clip">
+                        <img
+                          src={item.images}
+                          className="  top-0 w-full absolute blur-sm opacity-60 h-full object-cover mb-2 rounded-xl group-hover/card:shadow-xl"
+                          alt="thumbnail"
+                        />
+                        <img
+                          src={item.images}
+                          className="  top-0 h-full  object-contain mb-2 z-10 rounded-xl group-hover/card:shadow-xl"
+                          alt="thumbnail"
+                        />
+                      </div>
+                    </div>
+                    <div className="p-4 w-2/3">
+                      <div className="text-2xl leading-normal font-bold text-zinc-500 dark:text-zinc-200 line-clamp-2">
+                        {item.name}
+                      </div>
+                      <div className="text-zinc-500 text-sm max-w-sm mb-6 dark:text-zinc-400 line-clamp-6 mt-4 leading-relaxed">
+                        {item.description}
+                      </div>
+                      <div className="text-2xl font-bold text-zinc-500 dark:text-zinc-200 ">
+                        {item.prices && (
+                          <>
+                            <span>
+                              Rs{" "}
+                              {Math.floor(
+                                parseFloat(
+                                  item.prices[0].price.replace(/\,/g, "")
+                                )
+                              )}{" "}
+                              /-
+                            </span>
+                            <Link
+                              href={item.link}
+                              target="_blank"
+                              className="w-6/12"
+                            >
+                              <div
+                                translateZ={20}
+                                as="button"
+                                className="px-4 py-2 text-sm mt-2 w-fit bg-white rounded-md text-md font-normal dark:text-black border "
+                              >
+                                Read more →
+                              </div>
+                            </Link>
+                          </>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                  {item.prices ? (
+                    <>
+                      <div className="p-4 w-full col-span-2">
+                        <h2 className="text-2xl mb-2">Line Graph</h2>
+                        <Line
+                          data={chartData}
+                          options={options}
+                          className="w-full"
+                        />
+                      </div>
+                    </>
+                  ) : null}
+                </div>
+              </div>
             ) : (
               <button
                 onClick={() => {
@@ -205,7 +279,7 @@ const page = ({ params: { slug } }) => {
                 <Loading />
               </div>
             ) : (
-              data.map((item) => (
+              data.map((item, ind) => (
                 <CardContainer key={item._id} className="inter-var w-full">
                   <CardBody className="bg-gray-50 relative group/card  dark:hover:shadow-2xl dark:hover:shadow-emerald-500/[0.1] dark:bg-black dark:border-white/[0.2] border-black/[0.1] w-auto sm:w-[30rem] h-fit rounded-xl p-6 border  ">
                     <CardItem
@@ -278,7 +352,7 @@ const page = ({ params: { slug } }) => {
                         href={`/search/${item._id}`}
                         className=" flex w-6/12 cursor-pointer"
                         onClick={() => {
-                          setCompare(true);
+                          setCompare(ind);
                         }}
                       >
                         <CardItem
