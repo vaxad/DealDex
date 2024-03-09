@@ -124,8 +124,8 @@ export default function Home() {
           </defs>
         </svg>
       </div>
-      <div className="h-[20rem] md:h-[40rem] [perspective:1000px] relative b flex flex-col max-w-5xl mx-auto w-full  items-start justify-start mb-40 mt-20">
-        <div className="text-7xl max-sm:text-4xl font-semibold text-center mx-auto mb-8">Edge Cutting Features</div>
+      <div className="h-[50rem] [perspective:1000px] relative b flex flex-col max-w-5xl mx-auto w-full gap-12 items-start justify-start mb-40 mt-20">
+        <div className="text-7xl max-sm:text-4xl font-semibold text-center mx-auto ">Edge Cutting Features</div>
       <Tabs tabs={tabs} />
     </div>
     </div>
@@ -134,7 +134,7 @@ export default function Home() {
 
 const DummyContent = () => {
   return (
-    <Image
+    <img
       src="/linear.png"
       alt="dummy image"
       width="700"

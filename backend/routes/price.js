@@ -6,6 +6,7 @@ const { body, validationResult } = require('express-validator');
 const Product = require('../models/ProductCard');
 const User = require('../models/User');
 const UserProduct = require('../models/UserProduct');
+const ProductChat = require('../models/ProductChat');
 
 const key = "AIzaSyARj3WZVsYwxmVkXhJUwSBkIam-CrcgTL4"
 const cx = "31e5ee6051dd446c5"
@@ -344,6 +345,31 @@ router.get('/fetch/:id', async (req, res) => {
         return res.status(500).json({ error });
     }
 
+})
+
+router.post('/forum/:id', async (req, res) => {
+    try {
+        const productCard = await Product.findById(req.params.id)
+        if (!productCard) { return res.status(404).send("Not found") }
+        const {text} = req.body
+        const message = await ProductChat.create({productId:req.params.id, text, createdAt: Date.now()})
+        return res.status(200).json({message});
+    } catch (error) {
+        console.log(error)
+        return res.status(500).json({ error });
+    }
+})
+
+router.get('/forum/:id', async (req, res) => {
+    try {
+        const productCard = await Product.findById(req.params.id)
+        if (!productCard) { return res.status(404).send("Not found") }
+        const messages = await ProductChat.find({productId:req.params.id}).sort({createdAt:-1})
+        return res.status(200).json({messages});
+    } catch (error) {
+        console.log(error)
+        return res.status(500).json({ error });
+    }
 })
 
 module.exports = router;

@@ -123,11 +123,34 @@ const page = ({ params: { slug } }) => {
   const [data, setData] = React.useState([]);
   const [product, setProduct] = React.useState({});
   const [loading, setLoading] = React.useState(true);
+  const [category, setCategory] = React.useState("");
   const url = process.env.NEXT_PUBLIC_API_URL;
+  const flask = process.env.NEXT_PUBLIC_FLASK_URL;
+  async function uploadImage(url) {
+    // Make a POST request with Fetch API
+    try {
+      const uploadResponse = await fetch(`${flask}/category_detect`, {
+        headers:{
+          "Content-Type": "application/json"
+        },
+        method: 'POST',
+        body: JSON.stringify({ image_url: url }),
+      });
+      const responseData = await uploadResponse.json()
+      console.log('Image uploaded successfully:', responseData);
+      if(!responseData.result) return;
+      const json = JSON.parse(responseData.result);
+
+    } catch (error) {
+      console.error('Error uploading image:', error);
+    }
+  }
+
   const getData = async () => {
     const res = await fetch(`${url}/api/price/fetch/${slug}`);
     const data = await res.json();
     setProduct(data.product);
+    uploadImage(data.product.images[0])
     data.others.sort((a, b) => {
       return (
         parseFloat(a.prices[0].price.replace(/\,/g, "")) -
