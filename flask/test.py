@@ -1,55 +1,33 @@
-import requests
-from bs4 import BeautifulSoup
-import re
-import json
+import time
+from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
+import re 
 
-url = "https://www.cuponation.com.sg/amazon-promo-code"
-response = requests.get(url)
+def capture_url_after_delay(url, delay=3):
+    chrome_options = Options()
+    chrome_options.add_argument("--headless")
+    driver = webdriver.Chrome(options=chrome_options)
+    
+    try:
+        driver.get(url)
+        time.sleep(delay)
+        current_url = driver.current_url
+        return current_url
+    finally:
+        driver.quit()
 
-# Parse the HTML content
-soup = BeautifulSoup(response.text, "html.parser")
+def extract_lat_long_from_url(url):
+    pattern = r'@(-?\d+\.\d+),(-?\d+\.\d+),'
+    match = re.search(pattern, url)
+    if match:
+        latitude = float(match.group(1))
+        longitude = float(match.group(2))
+        return latitude, longitude
+    else:
+        return None, None
 
-coupons = soup.find_all(class_="_1abe9s9d")
-
-text=""
-for coupon in coupons:
-    text+=coupon.text+"\n"
-
-
-regex_pattern = r'\$(\d+(?:\.\d+)?)([A-Z]+)(.*?)Code(.*?)Expiration date: (\d+/\d+/\d+)'
-deal_pattern = r'(\d+)%OFFDeal(.*?)DealAmazon website will open in a new tab(\d+)%OFFGet deal'
-deal_with_code_pattern = r'\$(\d+)(OFF)Code(.*?)CodeVerifiedAmazon website will open in a new tab\$(\d+)(OFF)See promo code ​Expiration date: (\d+/\d+/\d+)'
-
-matches = re.findall(regex_pattern, text)
-deals = re.findall(deal_pattern, text)
-deals_with_code = re.findall(deal_with_code_pattern, text)
-
-data = {
-    "promo_codes": [
-        {
-            "discount_amount": match[0],
-            "code": match[1],
-            "description": match[2].strip(),
-            "verified": match[3].strip(),
-            "expiration_date": match[4]
-        } for match in matches
-    ],
-    "deals": [
-        {
-            "discount_percent": deal[0],
-            "description": deal[1].strip()
-        } for deal in deals
-    ],
-    "deals_with_code": [
-        {
-            "discount_amount": deal[0],
-            "discount_type": deal[1],
-            "description": deal[2].strip(),
-            "code_discount": deal[3],
-            "expiration_date": deal[4]
-        } for deal in deals_with_code
-    ]
-}
-
-json_data = json.dumps(data, indent=4)
-print(json_data)
+url = "https://www.google.com/maps/place/NIKE/data=!4m7!3m6!1s0x3be7c87d64681a85:0x431c435277ef248f!8m2!3d19.086601!4d72.888974!16s%2Fg%2F11g879lyxn!19sChIJhRpoZH3I5zsRjyTvd1JDHEM?authuser=0&hl=en&rclk=1"
+captured_url = capture_url_after_delay(url)
+latitude, longitude = extract_lat_long_from_url(captured_url)
+print("Latitude:", latitude)
+print("Longitude:", longitude)

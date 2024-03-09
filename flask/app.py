@@ -36,7 +36,7 @@ CORS(app)
 
 #ENV Variables
 load_dotenv()
-S3_BUCKET = os.getenv('S3_BUCKET')
+# S3_BUCKET = os.getenv('S3_BUCKET')
 TWILIO_ACCOUNT_SID = os.getenv('TWILIO_ACCOUNT_SID')
 TWILIO_AUTH_TOKEN = os.getenv('TWILIO_AUTH_TOKEN')
 TWILIO_PHONE_NUMBER = os.getenv('TWILIO_PHONE_NUMBER')
@@ -55,8 +55,8 @@ cloudinary.config(
 
 #CLIENTS
 client = Client(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN)
-s3 = boto3.client('s3')
-ses_client = boto3.client('ses')
+# s3 = boto3.client('s3')
+# ses_client = boto3.client('ses')
 
 #Functions
 def create_extractor(url):
@@ -139,80 +139,80 @@ def user_input(user_question):
     return response
 
 #API Routes
-@app.route('/upload', methods=['POST'])
-def upload_file():
-    if 'file' not in request.files:
-        return jsonify({'error': 'No file part'})
+# @app.route('/upload', methods=['POST'])
+# def upload_file():
+#     if 'file' not in request.files:
+#         return jsonify({'error': 'No file part'})
     
-    file = request.files['file']
+#     file = request.files['file']
     
-    if file.filename == '':
-        return jsonify({'error': 'No selected file'})
+#     if file.filename == '':
+#         return jsonify({'error': 'No selected file'})
     
-    try:
-        s3.upload_fileobj(file, S3_BUCKET, file.filename)
-        return jsonify({'success': True, 'message': 'File uploaded successfully'})
-    except Exception as e:
-        return jsonify({'error': str(e)})
+#     try:
+#         s3.upload_fileobj(file, S3_BUCKET, file.filename)
+#         return jsonify({'success': True, 'message': 'File uploaded successfully'})
+#     except Exception as e:
+#         return jsonify({'error': str(e)})
 
-@app.route('/delete/<filename>', methods=['DELETE'])
-def delete_file(filename):
-    try:
-        s3.delete_object(Bucket=S3_BUCKET, Key=filename)
-        return jsonify({'success': True, 'message': f'File {filename} deleted successfully'})
-    except botocore.exceptions.ClientError as e:
-        if e.response['Error']['Code'] == "NoSuchKey":
-            return jsonify({'error': f'File {filename} not found'})
-        else:
-            return jsonify({'error': str(e)})
+# @app.route('/delete/<filename>', methods=['DELETE'])
+# def delete_file(filename):
+#     try:
+#         s3.delete_object(Bucket=S3_BUCKET, Key=filename)
+#         return jsonify({'success': True, 'message': f'File {filename} deleted successfully'})
+#     except botocore.exceptions.ClientError as e:
+#         if e.response['Error']['Code'] == "NoSuchKey":
+#             return jsonify({'error': f'File {filename} not found'})
+#         else:
+#             return jsonify({'error': str(e)})
 
-@app.route('/download/<filename>', methods=['GET'])
-def download_file(filename):
-    try:
-        response = s3.get_object(Bucket=S3_BUCKET, Key=filename)
-        file_content = response['Body'].read()
-        save_dir = 'downloaded_images'
-        os.makedirs(save_dir, exist_ok=True) 
-        with open(os.path.join(save_dir, filename), 'wb') as f:
-            f.write(file_content)
-        return jsonify({'success': True, 'message': f'File {filename} downloaded and saved successfully {response}'})
-    except botocore.exceptions.ClientError as e:
-        if e.response['Error']['Code'] == "NoSuchKey":
-            return jsonify({'error': f'File {filename} not found'})
-        else:
-            return jsonify({'error': str(e)})
+# @app.route('/download/<filename>', methods=['GET'])
+# def download_file(filename):
+#     try:
+#         response = s3.get_object(Bucket=S3_BUCKET, Key=filename)
+#         file_content = response['Body'].read()
+#         save_dir = 'downloaded_images'
+#         os.makedirs(save_dir, exist_ok=True) 
+#         with open(os.path.join(save_dir, filename), 'wb') as f:
+#             f.write(file_content)
+#         return jsonify({'success': True, 'message': f'File {filename} downloaded and saved successfully {response}'})
+#     except botocore.exceptions.ClientError as e:
+#         if e.response['Error']['Code'] == "NoSuchKey":
+#             return jsonify({'error': f'File {filename} not found'})
+#         else:
+#             return jsonify({'error': str(e)})
 
-@app.route('/send_email', methods=['POST'])
-def send_email():
-    try:
-        recipient_email = request.form['recipient_email']
-        sender_email = 'mihirpanchal5400@gmail.com'
-        subject = request.form['subject']
-        html_body = request.form['html_body']
+# @app.route('/send_email', methods=['POST'])
+# def send_email():
+#     try:
+#         recipient_email = request.form['recipient_email']
+#         sender_email = 'mihirpanchal5400@gmail.com'
+#         subject = request.form['subject']
+#         html_body = request.form['html_body']
 
-        response = ses_client.send_email(
-            Destination={
-                'ToAddresses': [
-                    recipient_email,
-                ],
-            },
-            Message={
-                'Body': {
-                    'Html': {
-                        'Charset': 'UTF-8',
-                        'Data': html_body,
-                    },
-                },
-                'Subject': {
-                    'Charset': 'UTF-8',
-                    'Data': subject,
-                },
-            },
-            Source=sender_email,
-        )
-        return jsonify({'message': 'Email sent successfully'}), 200
-    except ClientError as e:
-        return jsonify({'error': str(e)}), 500
+#         response = ses_client.send_email(
+#             Destination={
+#                 'ToAddresses': [
+#                     recipient_email,
+#                 ],
+#             },
+#             Message={
+#                 'Body': {
+#                     'Html': {
+#                         'Charset': 'UTF-8',
+#                         'Data': html_body,
+#                     },
+#                 },
+#                 'Subject': {
+#                     'Charset': 'UTF-8',
+#                     'Data': subject,
+#                 },
+#             },
+#             Source=sender_email,
+#         )
+#         return jsonify({'message': 'Email sent successfully'}), 200
+#     except ClientError as e:
+#         return jsonify({'error': str(e)}), 500
 
 @app.route('/send_whatsapp_text', methods=['POST'])
 def send_whatsapp_text():
