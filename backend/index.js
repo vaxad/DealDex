@@ -11,8 +11,9 @@ app.use(cors());
 const port = 5000;
 
 app.use(express.json());
-app.use('/auth', require('./routes/auth'));
-// app.use('/api/notes', require('./routes/notes'));
+app.use('/api/auth', require('./routes/auth'));
+app.use('/api/notes', require('./routes/notes'));
+app.use('/api/price', require('./routes/price'));
 
 app.get('/', async (req, res) => {
   res.send("server is working");
