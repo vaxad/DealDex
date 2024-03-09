@@ -302,7 +302,8 @@ def scrape():
                 return jsonify({"error": f"Page must have been blocked by Amazon as the status code was {r.status_code}"}), 403
 
         result = e.extract(r.text)
-        result['price'] = result['price'].replace(' .', '') 
+        result['price'] = result['price'].replace(' .', '')
+        print(result) 
         return jsonify(result)
 
     except Exception as e:

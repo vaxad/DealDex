@@ -26,7 +26,8 @@ const find = async (pdt) => {
     console.log(urls)
     const result = []
     for (const url of urls) {
-        const res = await fetch("http://127.0.0.1:5000/scrape", {
+        const flask_url = process.env.FLASK_URL
+        const res = await fetch(`${flask_url}/scrape`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
