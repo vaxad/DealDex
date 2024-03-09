@@ -1,11 +1,11 @@
-import { Inter } from "next/font/google";
+import { Sora } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/ui/theme-provider"
 import SideNav from "./components/SideNav";
 import Navbar from "./components/Navbar";
 import AuthChecker from "./components/AuthChecker";
 
-const inter = Inter({ subsets: ["latin"] });
+const inter = Sora({ subsets: ["latin"] });
 
 export const metadata = {
   title: "Hackoders",
@@ -23,9 +23,9 @@ export default function RootLayout({ children }) {
             disableTransitionOnChange
           >
             <AuthChecker/>
-            <Navbar>
+            <Navbar />
             {children}
-            </Navbar>
+          
           </ThemeProvider></body>
     </html>
   );
