@@ -104,6 +104,22 @@ const page = ({ params: { slug } }) => {
   const [compare, setCompare] = useState(-1);
   const [item, setItem] = useState({});
   const [userData, setUserData] = useState({});
+  const isBigger = () => {
+    if (product.prices && item.prices) {
+      if (
+        parseFloat(item.prices[0].price.replace(/\,/g, "")) <=
+        parseFloat(product.prices[0].price.replace(/\,/g, ""))
+      ) {
+        setBigger(1);
+        console.log(parseFloat(item.prices[0].price.replace(/\,/g, "")));
+        return 1;
+      } else {
+        console.log(parseFloat(product.prices[0].price.replace(/\,/g, "")));
+        return 0;
+      }
+    }
+  };
+  const [bigger, setBigger] = useState(-1);
   const [data, setData] = React.useState([]);
   const [product, setProduct] = React.useState({});
   const [loading, setLoading] = React.useState(true);
@@ -127,6 +143,14 @@ const page = ({ params: { slug } }) => {
   useEffect(() => {
     if (compare !== -1) {
       setItem(data[compare]);
+      if (product.prices) {
+        setBigger(
+          parseFloat(data[compare].prices[0].price.replace(/\,/g, "")) >=
+            parseFloat(product.prices[0].price.replace(/\,/g, ""))
+            ? 1
+            : 0
+        );
+      }
     }
   }, [compare]);
   useEffect(() => {
@@ -164,8 +188,12 @@ const page = ({ params: { slug } }) => {
           </p>
         </div>
         {product && (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="w-full my-2 flex-col rounded-xl bg-gradient-to-b from-zinc-900 border border-zinc-800 to-black h-fit ">
+          <div className={`grid grid-cols-1 md:grid-cols-2 gap-4 `}>
+            <div
+              className={` w-full my-2 flex-col rounded-xl bg-gradient-to-b transition-all delay-500 duration-700 from-zinc-900 border border-opacity-45 to-black h-fit ${
+                bigger === 1 ? "fancy border-[#F3FF74] scale-105" : "scale-95"
+              }`}
+            >
               <div className="flex w-full">
                 <div className="h-full flex-grow w-1/2 flex items-center">
                   <div className="w-full h-60 relative rounded-l-xl items-center justify-center flex overflow-clip">
@@ -232,8 +260,14 @@ const page = ({ params: { slug } }) => {
               ) : null}
             </div>
             {compare !== -1 ? (
-              <div className="grid grid-cols-1 gap-4 w-full">
-                <div className="w-full my-2 flex-col rounded-xl bg-gradient-to-b from-zinc-900 border border-zinc-800 to-black h-fit ">
+              <div className={`grid grid-cols-1 gap-4 w-full `}>
+                <div
+                  className={` w-full my-2 flex-col rounded-xl bg-gradient-to-b transition-all delay-500 duration-700 from-zinc-900 border border-opacity-45 to-black h-fit ${
+                    bigger === 0
+                      ? "fancy border-[#F3FF74] scale-105"
+                      : "scale-95"
+                  }`}
+                >
                   <div className="flex w-full">
                     <div className="h-full flex-grow w-1/2 flex items-center">
                       <div className="w-full h-60 relative rounded-l-xl items-center justify-center flex overflow-clip">
@@ -253,7 +287,7 @@ const page = ({ params: { slug } }) => {
                       <div className="text-2xl leading-normal font-bold text-zinc-500 dark:text-zinc-200 line-clamp-2">
                         {item.name}
                       </div>
-                      <div className="text-zinc-500 text-sm max-w-sm mb-6 dark:text-zinc-400 line-clamp-6 mt-4 leading-relaxed">
+                      <div className="text-zinc-500 text-sm max-w-sm mb-6 dark:text-zinc-400 line-clamp-2 mt-2 leading-relaxed">
                         {item.description}
                       </div>
                       <div className="text-2xl font-bold text-zinc-500 dark:text-zinc-200 ">

@@ -38,16 +38,24 @@ export default function Navbar({ children }) {
         </Link>
         <Menubar className="max-sm:hidden">
           <MenubarMenu>
-            <MenubarTrigger>Home</MenubarTrigger>
+            <MenubarTrigger>
+              <Link href="/">Home</Link>
+            </MenubarTrigger>
           </MenubarMenu>
           <MenubarMenu>
-            <MenubarTrigger>Fashion</MenubarTrigger>
+            <MenubarTrigger>
+              <Link href="/map">Nearby</Link>
+            </MenubarTrigger>
           </MenubarMenu>
           <MenubarMenu>
-            <MenubarTrigger>Food</MenubarTrigger>
+            <MenubarTrigger>
+              <Link href="/virtual-try-on">Try on</Link>
+            </MenubarTrigger>
           </MenubarMenu>
           <MenubarMenu>
-            <MenubarTrigger>Tech</MenubarTrigger>
+            <MenubarTrigger>
+              <Link href="/search">Compare</Link>
+            </MenubarTrigger>
           </MenubarMenu>
         </Menubar>
         <div className=" flex flex-row gap-4 justify-center items-center">
@@ -59,16 +67,27 @@ export default function Navbar({ children }) {
             <div className="absolute mt-60 bg-black flex-col z-50 h-fit w-fit">
               <Menubar className="flex-col h-fit w-fit px-4 py-2">
                 <MenubarMenu>
-                  <MenubarTrigger className="py-1">Home</MenubarTrigger>
+                  <MenubarTrigger className="py-1">
+                    <Link href="/">Home</Link>
+                  </MenubarTrigger>
                 </MenubarMenu>
                 <MenubarMenu>
-                  <MenubarTrigger className="py-1">Fashion</MenubarTrigger>
+                  <MenubarTrigger className="py-1">
+                    {" "}
+                    <Link href="/map">Nearby</Link>
+                  </MenubarTrigger>
                 </MenubarMenu>
                 <MenubarMenu>
-                  <MenubarTrigger className="py-1">Food</MenubarTrigger>
+                  <MenubarTrigger className="py-1">
+                    {" "}
+                    <Link href="/virtual-try-on">Try on</Link>
+                  </MenubarTrigger>
                 </MenubarMenu>
                 <MenubarMenu>
-                  <MenubarTrigger className="py-1">Tech</MenubarTrigger>
+                  <MenubarTrigger className="py-1">
+                    {" "}
+                    <Link href="/search">Compare</Link>
+                  </MenubarTrigger>
                 </MenubarMenu>
               </Menubar>
             </div>
