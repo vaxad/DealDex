@@ -8,11 +8,12 @@ const User = require('../models/User');
 const UserProduct = require('../models/UserProduct');
 const ProductChat = require('../models/ProductChat');
 
-const key = "AIzaSyARj3WZVsYwxmVkXhJUwSBkIam-CrcgTL4"
-const cx = "31e5ee6051dd446c5"
+const key = "AIzaSyAho1Hkc5N1m8MQmsHTJ_rxrqRqNFC35zc"
+const cx = "c3b703ca3d0114cb5"
 const find = async (pdt) => {
     const res = await fetch(`https://customsearch.googleapis.com/customsearch/v1?key=${key}&cx=${cx}&q=${pdt}`)
     const js = await res.json()
+    console.log(js)
     const urls = []
     console.log(js.items.length)
     for (const item of js.items) {
