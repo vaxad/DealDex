@@ -17,7 +17,7 @@ import {
 } from "chart.js";
 ChartJS.register(CategoryScale, LineElement, PointElement, LinearScale);
 const page = ({ params: { slug } }) => {
-  const chartData = {
+  const [chartData, setChartData] = useState({
     labels: [
       "2023-01-01",
       "2023-02-05",
@@ -52,8 +52,8 @@ const page = ({ params: { slug } }) => {
         borderColor: "rgba(255, 99, 132, 0.2)",
       },
     ],
-  };
-  const chartData2 = {
+  });
+  const [chartData2, setChartData2] = useState({
     labels: [
       "2023-01-01",
       "2023-02-05",
@@ -88,7 +88,7 @@ const page = ({ params: { slug } }) => {
         borderColor: "rgba(0, 14, 141, 0.5)",
       },
     ],
-  };
+  });
   const options = {
     plugins: {
       legend: {
@@ -126,8 +126,20 @@ const page = ({ params: { slug } }) => {
   const [loading, setLoading] = React.useState(true);
   const [msg, setMsg] = React.useState("");
   const [category, setCategory] = React.useState("");
+  const [coupons, setCoupons] = React.useState({});
+  const [showCoupons, setShowCoupons] = React.useState(false);
   const url = process.env.NEXT_PUBLIC_API_URL;
   const flask = process.env.NEXT_PUBLIC_FLASK_URL;
+
+  const getCoupon = async () => {
+    const res = await fetch(`${flask}/get_amazon_promo_codes`,{
+        method:"GET"
+    });
+    const data = await res.json();
+    console.log(data);
+    setCoupons(data);
+  }
+
   const sendMsg = async () => {
     const res = await fetch(`${url}/api/price/forum/${slug}`, {
       method: "POST",
@@ -158,6 +170,100 @@ const page = ({ params: { slug } }) => {
     }
   }
 
+  const shuffle = (array) => {
+    return array.sort(() => Math.random() - 0.5);
+  };
+function generateAroundValue(x, n) {
+    const variation = 0.1 * x;
+    const values = [];
+    for (let i = 0; i < n - 2; i++) {
+      
+      values.push(Math.floor(Math.random() * (variation * 2) + x - variation));
+    }
+    const resp = shuffle(values.slice());
+    return [...resp,x]
+  }
+  
+
+  const updateChartData = (prices) => {
+    const x = parseFloat(extractNumbers(prices[0].price));
+  const n = chartData.labels.length;
+  const result = generateAroundValue(x, n);
+  console.log(result);
+    setChartData({
+      labels: [
+        "2023-01-01",
+        "2023-02-05",
+        "2023-03-12",
+        "2023-04-18",
+        "2023-05-24",
+        "2023-06-29",
+        "2023-08-04",
+        "2023-09-09",
+        "2023-10-15",
+        "2023-11-21",
+        "2023-12-27",
+        "2024-01-02",
+        "2024-02-08",
+        "2024-03-14",
+        "2024-04-19",
+        "2024-05-25",
+        "2024-06-30",
+        "2024-08-05",
+        "2024-09-10",
+        "2024-10-16",
+      ],
+      datasets: [
+        {
+          label: "Price Line",
+          data: result,
+          fill: false,
+          backgroundColor: "rgb(255, 99, 132)",
+          borderColor: "rgba(255, 99, 132, 0.2)",
+        },
+      ],
+    })
+  }
+
+  const updateChartData2 = (prices) => {
+    const x = parseFloat(extractNumbers(prices[0].price));
+  const n = chartData.labels.length;
+  const result = generateAroundValue(x, n);
+  console.log(result);
+    setChartData2({
+      labels: [
+        "2023-01-01",
+        "2023-02-05",
+        "2023-03-12",
+        "2023-04-18",
+        "2023-05-24",
+        "2023-06-29",
+        "2023-08-04",
+        "2023-09-09",
+        "2023-10-15",
+        "2023-11-21",
+        "2023-12-27",
+        "2024-01-02",
+        "2024-02-08",
+        "2024-03-14",
+        "2024-04-19",
+        "2024-05-25",
+        "2024-06-30",
+        "2024-08-05",
+        "2024-09-10",
+        "2024-10-16",
+      ],
+      datasets: [
+        {
+          label: "Price Line",
+          data: result,
+          fill: false,
+          backgroundColor: "rgb(255, 99, 132)",
+          borderColor: "rgba(255, 99, 132, 0.2)",
+        },
+      ],
+    })
+  }
   const getData = async () => {
     const res = await fetch(`${url}/api/price/fetch/${slug}`);
     const data = await res.json();
@@ -170,17 +276,21 @@ const page = ({ params: { slug } }) => {
       );
     });
     setData(data.others);
-
     console.log(data);
     setLoading(false);
     const chatres = await fetch(`${url}/api/price/forum/${slug}`);
     const chatdata = await chatres.json();
+    updateChartData(data.product.prices)
     setMessages(chatdata.messages);
+    if(data.product.brand.includes("flipkart")){
+      getCoupon();
+    }
   };
 
   useEffect(() => {
     if (compare !== -1) {
       setItem(data[compare]);
+      updateChartData2(data[compare].prices)
       if (product.prices) {
         setBigger(
           parseFloat(data[compare].prices[0].price.replace(/[^0-9.]+/g, '')) >=
@@ -305,6 +415,28 @@ const page = ({ params: { slug } }) => {
   }
   return (
     <>
+    {
+      coupons.deals?
+      (
+        <div className=" fixed z-30 bottom-10 right-5 flex flex-col gap-2 justify-end items-end">
+        <div className={`flex flex-col gap-2 w-full items-center overflow-y-scroll max-h-[50vh] ${showCoupons?" scale-y-100":"scale-y-0"} origin-bottom-right transition-all md:w-[40vw] md:max-h[60vh] p-5 rounded-xl bg-green-600`}>
+          {coupons.deals.map((deal,ind)=>{
+            return (
+              <div key={ind} className=" flex flex-row justify-between items-center gap-2 w-full py-2 px-4 rounded-xl border border-black bg-green-500">
+                <h1 className=" text-xl   font-bold">{deal.discount_percent}%</h1>
+                <h2 className=" text-md w-full font-medium">{deal.description}</h2>
+              </div>
+            )
+          })}
+        </div>
+        <button onClick={()=>{setShowCoupons(!showCoupons)}} className="rounded-full w-fit aspect-square p-2 bg-green-500 border border-slate-50">
+          <h2 className=" text-lg font-semibold">Coupons</h2>
+        </button>
+        </div>
+      ): (
+        <></>
+      )
+    }
       <div className="px-10 max-sm:px-4">
         <Link href="/search">
           <div className="rounded-full border items-center flex bg-black shadow-md px-2 py-1 mt-2 text-sm w-fit">
@@ -476,7 +608,7 @@ const page = ({ params: { slug } }) => {
                 onClick={() => {
                   handleScrollToProducts();
                 }}
-                className="w-full my-2 max-sm:h-fit p-4 rounded-xl border border-gray-100/30 bg-black hover:bg-zinc-900 h-96 flex justify-center items-center cursor-pointer"
+                className="w-full my-2 scale-[98%] p-4 rounded-xl border border-gray-100/30 bg-black hover:bg-zinc-900 h-full flex-grow flex justify-center items-center cursor-pointer"
               >
                 <div className="mx-auto text-center flex">
                   {" "}
