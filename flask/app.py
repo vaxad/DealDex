@@ -30,6 +30,7 @@ from bs4 import BeautifulSoup
 import re
 import PIL
 from flask_cors import CORS
+import scrapetube
 
 app = Flask(__name__) 
 CORS(app)
@@ -441,7 +442,6 @@ def get_amazon_promo_codes():
     url = "https://www.cuponation.com.sg/amazon-promo-code"
     response = requests.get(url)
 
-    # Parse the HTML content
     soup = BeautifulSoup(response.text, "html.parser")
 
     coupons = soup.find_all(class_="_1abe9s9d")
@@ -505,6 +505,26 @@ def category_detect():
     except Exception as e:
         return jsonify({'error': str(e)}), 500
     
+@app.route('/get_videos', methods=['POST'])
+def get_videos():
+    product_name = request.form['product_name']
+    product_name+="review video"
+    videos = scrapetube.get_search(product_name)
+    
+    ytvideos = []
+    for video in videos:
+        if len(ytvideos) >= 3:
+            break
+        video_details = {
+            'videoId': video['videoId'],
+            'thumbnail': video['thumbnail']['thumbnails'][1]["url"],  
+            'title': video['title']['runs'][0]['text'],          
+            'link': f"https://www.youtube.com/watch?v={video['videoId']}"
+        }
+        ytvideos.append(video_details)
+    
+    return jsonify({'videos': ytvideos})
+
 @app.route('/', methods=['GET']) 
 def defaultroute(): 
 	if(request.method == 'GET'): 
