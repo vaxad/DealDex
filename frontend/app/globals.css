@@ -147,3 +147,24 @@
 .fancy{
   filter: drop-shadow(0px 0px 16px rgba(1, 151, 49, 0.218));
 }
+/* custom-scrollbar.css */
+/* Style the scrollbar */
+::-webkit-scrollbar {
+  width: 3px; /* Width of the scrollbar */
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: #000000; /* Color of the track */
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: #222222; /* Color of the handle */
+  border-radius: 6px; /* Roundness of the handle */
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: #2a2a2a; /* Color of the handle when hovered */
+}

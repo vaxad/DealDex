@@ -124,38 +124,37 @@ const page = ({ params: { slug } }) => {
   const [messages, setMessages] = React.useState([]);
   const [product, setProduct] = React.useState({});
   const [loading, setLoading] = React.useState(true);
-  const [msg,setMsg] = React.useState("")
+  const [msg, setMsg] = React.useState("");
   const [category, setCategory] = React.useState("");
   const url = process.env.NEXT_PUBLIC_API_URL;
   const flask = process.env.NEXT_PUBLIC_FLASK_URL;
-  const sendMsg = async() => {
-    const res = await fetch(`${url}/api/price/forum/${slug}`,{
-      method:"POST",
-      headers:{
-        "Content-Type":"application/json"
+  const sendMsg = async () => {
+    const res = await fetch(`${url}/api/price/forum/${slug}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
       },
-      body:JSON.stringify({text:msg})
+      body: JSON.stringify({ text: msg }),
     });
     const data = await res.json();
-    setMessages([...messages,data.message]);
-  }
+    setMessages([...messages, data.message]);
+  };
   async function uploadImage(url) {
     // Make a POST request with Fetch API
     try {
       const uploadResponse = await fetch(`${flask}/category_detect`, {
-        headers:{
-          "Content-Type": "application/json"
+        headers: {
+          "Content-Type": "application/json",
         },
-        method: 'POST',
+        method: "POST",
         body: JSON.stringify({ image_url: url }),
       });
-      const responseData = await uploadResponse.json()
-      console.log('Image uploaded successfully:', responseData);
-      if(!responseData.result) return;
+      const responseData = await uploadResponse.json();
+      console.log("Image uploaded successfully:", responseData);
+      if (!responseData.result) return;
       const json = JSON.parse(responseData.result);
-
     } catch (error) {
-      console.error('Error uploading image:', error);
+      console.error("Error uploading image:", error);
     }
   }
 
@@ -163,7 +162,7 @@ const page = ({ params: { slug } }) => {
     const res = await fetch(`${url}/api/price/fetch/${slug}`);
     const data = await res.json();
     setProduct(data.product);
-    uploadImage(data.product.images[0])
+    uploadImage(data.product.images[0]);
     data.others.sort((a, b) => {
       return (
         parseFloat(a.prices[0].price.replace(/\,/g, "")) -
@@ -500,24 +499,43 @@ const page = ({ params: { slug } }) => {
             <h1 className=" text-2xl font-bold ">Chat Forum</h1>
           </div>
           <div className=" flex flex-col gap-2">
-            <div className=" flex flex-row justify-between w-full px-4 py-2 bg-lime-400">
-              <input className=" text-xl w-full font-semibold text-zinc-950" value={msg} onChange={(e)=>setMsg(e.target.value)} type="text" >
-              </input>
-              <button onClick={()=>{sendMsg()}} className=" w-fit px-2 py-1 text-md font-bold">Send</button>
-            </div>
-            {messages.map((message) => {
-              return (
-                <div className=" flex flex-col px-4 py-2 bg-lime-400 text-zinc-950">
-                  <div className=" flex flex-row w-full py-1 justify-between items-center text-zinc-950">
-                    <h3 className=" text-md font-bold text-zinc-800">{"user"}</h3>
-                    <h4 className=" text-sm font-bold text-zinc-500">{(new Date(message.createdAt)).toISOString()}</h4>
+            <div className="h-[70vh] rounded-xl border border-[#f3ff7442] overflow-hidden px-2 bg-gradient-to-b from-zinc-900 to-black mb-20 overflow-y-scroll">
+              <div className=" flex flex-row justify-between w-full px-4 mt-4 py-2 bg-transparent mb-4">
+                <input
+                  className=" text-md px-4 w-full font-semibold py-2 rounded-full mr-2 text-white bg-black"
+                  value={msg}
+                  onChange={(e) => setMsg(e.target.value)}
+                  type="text"
+                  placeholder="Type your message here..."
+                ></input>
+                <button
+                  onClick={() => {
+                    sendMsg();
+                  }}
+                  className=" w-fit px-4 py-2 flex text-md rounded-full border bg-black"
+                >
+                  <span className="max-sm:hidden">Send</span>{" "}
+                  <img src="/send.png" className="ml-2 max-md:ml-0" alt="" />
+                </button>
+              </div>
+              {messages.map((message) => {
+                return (
+                  <div className=" flex flex-col px-4 py-2 bg-gradient-to-b from-zinc-900 to-black mb-4 border mx-2 rounded-md">
+                    <div className=" flex flex-row w-full py-1 justify-between items-center text-white">
+                      <h3 className=" text-md font-regular text-zinc-400">
+                        User{Math.floor(Math.random() * 1000)}
+                      </h3>
+                      <h4 className=" text-sm font-bold text-zinc-500">
+                        {new Date(message.createdAt).toISOString()}
+                      </h4>
+                    </div>
+                    <h2 className=" text-lg font-medium text-white">
+                      {message.text}
+                    </h2>
                   </div>
-                  <h2 className=" text-lg font-medium text-zinc-950">
-                    {message.text}
-                  </h2>
-                </div>
-              )
-            })}
+                );
+              })}
+            </div>
           </div>
         </div>
       </div>
