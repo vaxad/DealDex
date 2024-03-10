@@ -328,8 +328,6 @@ def scrape_amazon_reviews():
             review["content"] = r.get("content", "")
             reviews_data.append(review)
 
-    sentiment_analysis_pipeline = pipeline("sentiment-analysis")
-
     review_sentiments = []
     for review in reviews_data:
         sentiment_prediction = sentiment_analysis_pipeline(review['content'])[0]
@@ -376,8 +374,6 @@ def send_whatsapp_review():
                 review["content"] = r.get("content", "")
                 rev += review["content"] + "\n"
                 reviews_data.append(review)
-
-        sentiment_analysis_pipeline = pipeline("sentiment-analysis")
 
         review_sentiments = []
         for review in reviews_data:
