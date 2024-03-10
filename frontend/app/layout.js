@@ -4,7 +4,7 @@ import { ThemeProvider } from "../components/ui/theme-provider"
 import SideNav from "./components/SideNav";
 import Navbar from "./components/Navbar";
 import AuthChecker from "./components/AuthChecker";
-
+import Footer from "./components/Footer";
 const inter = Sora({ subsets: ["latin"] });
 
 export const metadata = {
@@ -33,7 +33,7 @@ export default function RootLayout({ children }) {
             {/* <AuthChecker/> */}
             <Navbar />
             {children}
-          
+          <Footer/>
           </ThemeProvider></body>
     </html>
   );

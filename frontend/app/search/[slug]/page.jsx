@@ -107,14 +107,16 @@ const page = ({ params: { slug } }) => {
   const isBigger = () => {
     if (product.prices && item.prices) {
       if (
-        parseFloat(item.prices[0].price.replace(/[^0-9.]+/g, '')) <=
-        parseFloat(product.prices[0].price.replace(/[^0-9.]+/g, ''))
+        parseFloat(item.prices[0].price.replace(/[^0-9.]+/g, "")) <=
+        parseFloat(product.prices[0].price.replace(/[^0-9.]+/g, ""))
       ) {
         setBigger(1);
-        console.log(parseFloat(item.prices[0].price.replace(/[^0-9.]+/g, '')));
+        console.log(parseFloat(item.prices[0].price.replace(/[^0-9.]+/g, "")));
         return 1;
       } else {
-        console.log(parseFloat(product.prices[0].price.replace(/[^0-9.]+/g, '')));
+        console.log(
+          parseFloat(product.prices[0].price.replace(/[^0-9.]+/g, ""))
+        );
         return 0;
       }
     }
@@ -127,18 +129,19 @@ const page = ({ params: { slug } }) => {
   const [msg, setMsg] = React.useState("");
   const [category, setCategory] = React.useState("");
   const [coupons, setCoupons] = React.useState({});
+  const [reviews, setReviews] = React.useState([])
   const [showCoupons, setShowCoupons] = React.useState(false);
   const url = process.env.NEXT_PUBLIC_API_URL;
   const flask = process.env.NEXT_PUBLIC_FLASK_URL;
 
   const getCoupon = async () => {
-    const res = await fetch(`${flask}/get_amazon_promo_codes`,{
-        method:"GET"
+    const res = await fetch(`${flask}/get_amazon_promo_codes`, {
+      method: "GET",
     });
     const data = await res.json();
     console.log(data);
     setCoupons(data);
-  }
+  };
 
   const sendMsg = async () => {
     const res = await fetch(`${url}/api/price/forum/${slug}`, {
@@ -173,23 +176,21 @@ const page = ({ params: { slug } }) => {
   const shuffle = (array) => {
     return array.sort(() => Math.random() - 0.5);
   };
-function generateAroundValue(x, n) {
+  function generateAroundValue(x, n) {
     const variation = 0.1 * x;
     const values = [];
     for (let i = 0; i < n - 2; i++) {
-      
       values.push(Math.floor(Math.random() * (variation * 2) + x - variation));
     }
     const resp = shuffle(values.slice());
-    return [...resp,x]
+    return [...resp, x];
   }
-  
 
   const updateChartData = (prices) => {
     const x = parseFloat(extractNumbers(prices[0].price));
-  const n = chartData.labels.length;
-  const result = generateAroundValue(x, n);
-  console.log(result);
+    const n = chartData.labels.length;
+    const result = generateAroundValue(x, n);
+    console.log(result);
     setChartData({
       labels: [
         "2023-01-01",
@@ -222,14 +223,14 @@ function generateAroundValue(x, n) {
           borderColor: "rgba(255, 99, 132, 0.2)",
         },
       ],
-    })
-  }
+    });
+  };
 
   const updateChartData2 = (prices) => {
     const x = parseFloat(extractNumbers(prices[0].price));
-  const n = chartData.labels.length;
-  const result = generateAroundValue(x, n);
-  console.log(result);
+    const n = chartData.labels.length;
+    const result = generateAroundValue(x, n);
+    console.log(result);
     setChartData2({
       labels: [
         "2023-01-01",
@@ -258,12 +259,78 @@ function generateAroundValue(x, n) {
           label: "Price Line",
           data: result,
           fill: false,
-          backgroundColor: "rgb(255, 99, 132)",
-          borderColor: "rgba(255, 99, 132, 0.2)",
+          backgroundColor: "rgb(30, 52, 255)",
+          borderColor: "rgba(0, 13, 131, 1)",
         },
       ],
-    })
-  }
+    });
+  };
+
+  const handleYt = async (name) => {
+    const form = new FormData();
+    form.append('product_name',name);
+    const res = await fetch(`${flask}/get_videos`,{
+      method:'POST',
+      body:form
+    });
+    const data = await res.json();
+    console.log(data);
+    setReviews(data.videos);
+  };
+
+  const YtCard = ({item}) => {
+    const [err, setErr] = useState(false)
+  return !err&&(
+    <CardContainer key={item.videoId} className="inter-var">
+      <CardBody className="bg-gray-50 relative group/card  dark:hover:shadow-2xl dark:hover:shadow-emerald-500/[0.1] dark:bg-black dark:border-white/[0.2] border-black/[0.1] w-full h-fit rounded-xl p-6 border  ">
+        <CardItem
+          translateZ="100"
+          className="w-full h-60 my-5  relative rounded-xl flex overflow-clip"
+        >
+          <img
+            src={item.thumbnail}
+            height="1000"
+            onError={()=>setErr(true)}
+            width="1000"
+            className="  top-0 w-full absolute blur-sm opacity-60 -z-10 object-contain mb-2 rounded-xl group-hover/card:shadow-xl"
+            alt="thumbnail"
+          />
+          <img
+            src={item.thumbnail}
+            height="1000"
+            width="1000"
+            onError={()=>setErr(true)}
+            className="  top-0 h-full object-contain mb-2 rounded-xl group-hover/card:shadow-xl"
+            alt="thumbnail"
+          />
+        </CardItem>
+        <CardItem
+          translateZ="50"
+          className="text-xl font-bold text-neutral-600 dark:text-white line-clamp-2"
+        >
+          {item.title}
+        </CardItem>
+        <div className="flex w-full justify-center items-center mt-2 gap-2">
+          <a
+            href={item.link}
+            target="_blank"
+            className=" flex w-full"
+          >
+            <CardItem
+              translateZ={20}
+              as="button"
+              className="px-4 py-4 flex items-center justify-center mx-auto text-center w-full  rounded-xl bg-black dark:bg-white dark:text-black text-white text-md font-bold"
+            >
+              View
+              {/* <img src="/expand.png" alt="" className="ml-2" /> */}
+            </CardItem>
+          </a>
+        </div>
+      </CardBody>
+    </CardContainer>
+  
+  )}
+
   const getData = async () => {
     const res = await fetch(`${url}/api/price/fetch/${slug}`);
     const data = await res.json();
@@ -271,8 +338,8 @@ function generateAroundValue(x, n) {
     uploadImage(data.product.images[0]);
     data.others.sort((a, b) => {
       return (
-        parseFloat(a.prices[0].price.replace(/[^0-9.]+/g, '')) -
-        parseFloat(b.prices[0].price.replace(/[^0-9.]+/g, ''))
+        parseFloat(a.prices[0].price.replace(/[^0-9.]+/g, "")) -
+        parseFloat(b.prices[0].price.replace(/[^0-9.]+/g, ""))
       );
     });
     setData(data.others);
@@ -280,21 +347,22 @@ function generateAroundValue(x, n) {
     setLoading(false);
     const chatres = await fetch(`${url}/api/price/forum/${slug}`);
     const chatdata = await chatres.json();
-    updateChartData(data.product.prices)
+    updateChartData(data.product.prices);
     setMessages(chatdata.messages);
-    if(data.product.brand.includes("flipkart")){
+    if (data.product.brand.includes("flipkart")) {
       getCoupon();
     }
+    handleYt(data.product.name);
   };
 
   useEffect(() => {
     if (compare !== -1) {
       setItem(data[compare]);
-      updateChartData2(data[compare].prices)
+      updateChartData2(data[compare].prices);
       if (product.prices) {
         setBigger(
-          parseFloat(data[compare].prices[0].price.replace(/[^0-9.]+/g, '')) >=
-            parseFloat(product.prices[0].price.replace(/[^0-9.]+/g, ''))
+          parseFloat(data[compare].prices[0].price.replace(/[^0-9.]+/g, "")) >=
+            parseFloat(product.prices[0].price.replace(/[^0-9.]+/g, ""))
             ? 1
             : 0
         );
@@ -315,128 +383,140 @@ function generateAroundValue(x, n) {
   };
 
   function extractNumbers(str) {
-    return str.replace(/[^0-9.]+/g, '');
-
+    return str.replace(/[^0-9.]+/g, "");
   }
 
-  const CompareCard = ({item, ind}) => {
-    const [err, setErr] = useState(false)
-    return !err&&(
-      <CardContainer key={item._id} className="inter-var w-full">
-      <CardBody className="bg-gray-50 relative group/card  dark:hover:shadow-2xl dark:hover:shadow-emerald-500/[0.1] dark:bg-black dark:border-white/[0.2] border-black/[0.1] w-auto sm:w-[30rem] h-fit rounded-xl p-6 border  ">
-        <CardItem
-          translateZ="100"
-          className="w-full h-60 my-5  relative rounded-xl flex overflow-clip"
-        >
-          <img
-            src={item.images[0]}
-            height="1000"
-            width="1000"
-            onError={()=>setErr(true)}
-            className="  top-0 w-full absolute blur-sm opacity-60 -z-10 object-contain mb-2 rounded-xl group-hover/card:shadow-xl"
-            alt="thumbnail"
-          />
-          <img
-            src={item.images[0]}
-            height="1000"
-            width="1000"
-            onError={()=>setErr(true)}
-            className="  top-0 h-full object-contain mb-2 rounded-xl group-hover/card:shadow-xl"
-            alt="thumbnail"
-          />
-        </CardItem>
-        <CardItem
-          translateZ="50"
-          className="text-xl font-bold text-neutral-600 dark:text-white line-clamp-2"
-        >
-          {item.name}
-        </CardItem>
-        <CardItem
-          as="p"
-          translateZ="60"
-          className="text-neutral-500 text-sm max-w-sm mb-2 dark:text-neutral-300 line-clamp-1"
-        >
-          {item.description}
-        </CardItem>
-        <CardItem
-          as="p"
-          translateZ="60"
-          className="text-neutral-500 text-sm max-w-sm mb-6 dark:text-neutral-300"
-        >
-          <Link href={item.brand} className="flex gap-1">
-            {" "}
-            <span> source: </span>
-            <div className="underline">{item.brand}</div>{" "}
-          </Link>
-        </CardItem>
-        <CardItem
-          translateZ="50"
-          className="text-2xl font-bold text-neutral-600 dark:text-white"
-        >
-          {item.prices.length > 0 && (
-            <span>
-              Rs{" "}
-              {Math.floor(item.prices[0].price) ||
-                item.prices[0].price}{" "}
-              /-
-            </span>
-          )}
-        </CardItem>
-        <div className="flex justify-around items-center mt-2 gap-2">
-          <Link href={item.link} target="_blank" className="w-6/12">
+  const CompareCard = ({ item, ind }) => {
+    const [err, setErr] = useState(false);
+    return (
+      !err && (
+        <CardContainer key={item._id} className="inter-var w-full">
+          <CardBody className="bg-gray-50 relative group/card  dark:hover:shadow-2xl dark:hover:shadow-emerald-500/[0.1] dark:bg-black dark:border-white/[0.2] border-black/[0.1] w-auto sm:w-[30rem] h-fit rounded-xl p-6 border  ">
             <CardItem
-              translateZ={20}
-              as="button"
-              className="px-4 py-4 w-full rounded-xl text-md font-normal dark:text-white border "
+              translateZ="100"
+              className="w-full h-60 my-5  relative rounded-xl flex overflow-clip"
             >
-              Visit →
+              <img
+                src={item.images[0]}
+                height="1000"
+                width="1000"
+                onError={() => setErr(true)}
+                className="  top-0 w-full absolute blur-sm opacity-60 -z-10 object-contain mb-2 rounded-xl group-hover/card:shadow-xl"
+                alt="thumbnail"
+              />
+              <img
+                src={item.images[0]}
+                height="1000"
+                width="1000"
+                onError={() => setErr(true)}
+                className="  top-0 h-full object-contain mb-2 rounded-xl group-hover/card:shadow-xl"
+                alt="thumbnail"
+              />
             </CardItem>
-          </Link>
-          <div
-            href={`/search/${item._id}`}
-            className=" flex w-6/12 cursor-pointer"
-            onClick={() => {
-              setCompare(ind);
-              handleScrollToCompare();
-            }}
-          >
             <CardItem
-              translateZ={20}
-              as="button"
-              className="px-4 py-4 flex items-center justify-center mx-auto text-center w-full  rounded-xl bg-black dark:bg-white dark:text-black text-white text-md font-bold"
+              translateZ="50"
+              className="text-xl font-bold text-neutral-600 dark:text-white line-clamp-2"
             >
-              Compare <img src="/compare.png" alt="" />
+              {item.name}
             </CardItem>
-          </div>
-        </div>
-      </CardBody>
-    </CardContainer>
-    )
-  }
+            <CardItem
+              as="p"
+              translateZ="60"
+              className="text-neutral-500 text-sm max-w-sm mb-2 dark:text-neutral-300 line-clamp-1"
+            >
+              {item.description}
+            </CardItem>
+            <CardItem
+              as="p"
+              translateZ="60"
+              className="text-neutral-500 text-sm max-w-sm mb-6 dark:text-neutral-300"
+            >
+              <Link href={item.brand} className="flex gap-1">
+                {" "}
+                <span> source: </span>
+                <div className="underline">{item.brand}</div>{" "}
+              </Link>
+            </CardItem>
+            <CardItem
+              translateZ="50"
+              className="text-2xl font-bold text-neutral-600 dark:text-white"
+            >
+              {item.prices.length > 0 && (
+                <span>
+                  Rs {Math.floor(item.prices[0].price) || item.prices[0].price}{" "}
+                  /-
+                </span>
+              )}
+            </CardItem>
+            <div className="flex justify-around items-center mt-2 gap-2">
+              <Link href={item.link} target="_blank" className="w-6/12">
+                <CardItem
+                  translateZ={20}
+                  as="button"
+                  className="px-4 py-4 w-full rounded-xl text-md font-normal dark:text-white border "
+                >
+                  Visit →
+                </CardItem>
+              </Link>
+              <div
+                href={`/search/${item._id}`}
+                className=" flex w-6/12 cursor-pointer"
+                onClick={() => {
+                  setCompare(ind);
+                  handleScrollToCompare();
+                }}
+              >
+                <CardItem
+                  translateZ={20}
+                  as="button"
+                  className="px-4 py-4 flex items-center justify-center mx-auto text-center w-full  rounded-xl bg-black dark:bg-white dark:text-black text-white text-md font-bold"
+                >
+                  Compare <img src="/compare.png" alt="" />
+                </CardItem>
+              </div>
+            </div>
+          </CardBody>
+        </CardContainer>
+      )
+    );
+  };
   return (
     <>
-    {
-      coupons.deals?
-      (
-        <div className=" fixed z-30 bottom-10 right-5 flex flex-col gap-2 justify-end items-end">
-        <div className={`flex flex-col gap-2 w-full items-center overflow-y-scroll max-h-[50vh] ${showCoupons?" scale-y-100":"scale-y-0"} origin-bottom-right transition-all md:w-[40vw] md:max-h[60vh] p-5 rounded-xl bg-green-600`}>
-          {coupons.deals.map((deal,ind)=>{
-            return (
-              <div key={ind} className=" flex flex-row justify-between items-center gap-2 w-full py-2 px-4 rounded-xl border border-black bg-green-500">
-                <h1 className=" text-xl   font-bold">{deal.discount_percent}%</h1>
-                <h2 className=" text-md w-full font-medium">{deal.description}</h2>
-              </div>
-            )
-          })}
+      {coupons.deals ? (
+        <div className={`fixed  bottom-10 z-10  right-5 flex flex-col gap-2 justify-end items-end`}>
+        {showCoupons?<div
+            className={`flex flex-col ${showCoupons?" z-30":" z-0"} border border-slate-50 gap-2 w-full items-center overflow-y-scroll max-h-[50vh] ${
+              showCoupons ? " scale-y-100" : "scale-y-0"
+            } origin-bottom-right transition-all md:w-[40vw] md:max-h[60vh] p-5 rounded-xl bg-black`}
+          >
+            {coupons.deals.map((deal, ind) => {
+              return (
+                <div
+                  key={ind}
+                  className=" flex flex-row justify-between items-center gap-2 w-full py-2 px-4 rounded-xl border border-black bg-gradient from-zinc-900 to-black"
+                >
+                  <h1 className=" text-xl   font-bold">
+                    {deal.discount_percent}%
+                  </h1>
+                  <h2 className=" text-md w-full font-medium">
+                    {deal.description}
+                  </h2>
+                </div>
+              );
+            })}
+          </div>:<></>}
+          <button
+            onClick={() => {
+              setShowCoupons(!showCoupons);
+            }}
+            className="rounded-full z-30 w-fit aspect-square p-2 bg-zinc-900 border border-slate-50"
+          >
+            <h2 className=" text-lg font-semibold">Coupons</h2>
+          </button>
         </div>
-        <button onClick={()=>{setShowCoupons(!showCoupons)}} className="rounded-full w-fit aspect-square p-2 bg-green-500 border border-slate-50">
-          <h2 className=" text-lg font-semibold">Coupons</h2>
-        </button>
-        </div>
-      ): (
+      ) : (
         <></>
-      )
-    }
+      )}
       <div className="px-10 max-sm:px-4">
         <Link href="/search">
           <div className="rounded-full border items-center flex bg-black shadow-md px-2 py-1 mt-2 text-sm w-fit">
@@ -453,67 +533,73 @@ function generateAroundValue(x, n) {
           <p className="text-zinc-500 mt-2 mb-4 dark:text-zinc-400">
             Compare Products across websites{" "}
           </p>
+          
         </div>
-        {(
+        {
           <div className={`grid grid-cols-1 md:grid-cols-2 gap-4 `}>
             <div
               className={` w-full my-2 flex-col rounded-xl bg-gradient-to-b transition-all delay-500 duration-700 from-zinc-900 border border-opacity-45 to-black h-fit ${
-                bigger === 1 ? "fancy border-[#F3FF74] scale-[102%]" : "scale-[98%]"
+                bigger === 1
+                  ? "fancy border-[#F3FF74] scale-[102%]"
+                  : "scale-[98%]"
               }`}
             >
-              {product._id?<div className="flex w-full">
-                <div className="h-full flex-grow w-1/2 flex items-center">
-                  <div className="w-full h-60 relative rounded-l-xl items-center justify-center flex overflow-clip">
-                    <img
-                      src={product.images}
-                      className="  top-0 w-full absolute blur-sm opacity-60 h-full object-cover mb-2 rounded-xl group-hover/card:shadow-xl"
-                      alt="thumbnail"
-                    />
-                    <img
-                      src={product.images}
-                      className="  top-0 h-full  object-contain mb-2 z-10 rounded-xl group-hover/card:shadow-xl"
-                      alt="thumbnail"
-                    />
+              {product._id ? (
+                <div className="flex w-full">
+                  <div className="h-full flex-grow w-1/2 flex items-center">
+                    <div className="w-full h-60 relative rounded-l-xl items-center justify-center flex overflow-clip">
+                      <img
+                        src={product.images}
+                        className="  top-0 w-full absolute blur-sm opacity-60 h-full object-cover mb-2 rounded-xl group-hover/card:shadow-xl"
+                        alt="thumbnail"
+                      />
+                      <img
+                        src={product.images}
+                        className="  top-0 h-full  object-contain mb-2 z-10 rounded-xl group-hover/card:shadow-xl"
+                        alt="thumbnail"
+                      />
+                    </div>
                   </div>
-                </div>
-                <div className="p-4 w-2/3">
-                  <div className="text-2xl leading-normal font-bold text-zinc-500 dark:text-zinc-200 line-clamp-2">
-                    {product.name}
-                  </div>
-                  <div className="text-zinc-500 text-sm max-w-sm mb-4 dark:text-zinc-400 line-clamp-2 mt-2 leading-relaxed">
-                    {product.description}
-                  </div>
-                  <div className="text-2xl font-bold text-zinc-500 dark:text-zinc-200 ">
-                    {product.prices && (
-                      <>
-                        <span>
-                          Rs{" "}
-                          {Math.floor(
-                            parseFloat(
-                              extractNumbers(product.prices[0].price)
-                            )
-                          )}{" "}
-                          /-
-                        </span>
-                        <Link
-                          href={product.link}
-                          target="_blank"
-                          className="w-6/12"
-                        >
-                          <div
-                            translateZ={20}
-                            as="button"
-                            className="px-4 py-2 text-sm mt-2 w-fit bg-white rounded-md text-md font-normal dark:text-black border "
+                  <div className="p-4 w-2/3">
+                    <div className="text-2xl leading-normal font-bold text-zinc-500 dark:text-zinc-200 line-clamp-2">
+                      {product.name}
+                    </div>
+                    <div className="text-zinc-500 text-sm max-w-sm mb-4 dark:text-zinc-400 line-clamp-2 mt-2 leading-relaxed">
+                      {product.description}
+                    </div>
+                    <div className="text-2xl font-bold text-zinc-500 dark:text-zinc-200 ">
+                      {product.prices && (
+                        <>
+                          <span>
+                            Rs{" "}
+                            {Math.floor(
+                              parseFloat(
+                                extractNumbers(product.prices[0].price)
+                              )
+                            )}{" "}
+                            /-
+                          </span>
+                          <Link
+                            href={product.link}
+                            target="_blank"
+                            className="w-6/12"
                           >
-                            Read more →
-                          </div>
-                        </Link>
-                      </>
-                    )}
+                            <div
+                              translateZ={20}
+                              as="button"
+                              className="px-4 py-2 text-sm mt-2 w-fit bg-white rounded-md text-md font-normal dark:text-black border "
+                            >
+                              Read more →
+                            </div>
+                          </Link>
+                        </>
+                      )}
+                    </div>
                   </div>
                 </div>
-              </div>
-              :<Loading></Loading>}
+              ) : (
+                <Loading></Loading>
+              )}
 
               {product.prices ? (
                 <>
@@ -565,9 +651,7 @@ function generateAroundValue(x, n) {
                             <span>
                               Rs{" "}
                               {Math.floor(
-                                parseFloat(
-                                  extractNumbers(item.prices[0].price)
-                                )
+                                parseFloat(extractNumbers(item.prices[0].price))
                               )}{" "}
                               /-
                             </span>
@@ -618,8 +702,21 @@ function generateAroundValue(x, n) {
               </button>
             )}
           </div>
-        )}
-        <div className="mt-10">
+        }
+        {reviews.length>0?<div className="mt-4">
+          <h1
+            id="compare"
+            className="text-4xl max-sm:text-2xl font-bold text-zinc-500 dark:text-zinc-200"
+          >
+            Product Reviews:
+          </h1>
+          <div className=" pt-5 pb-24  w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12">
+            {
+              reviews.map((item) => <YtCard item={item} key={item._id} /> )
+            }
+          </div>
+          </div>:<></>}
+        <div className="mt-4">
           <h1
             id="products"
             className="text-4xl font-bold text-zinc-500 dark:text-zinc-200"
@@ -634,7 +731,7 @@ function generateAroundValue(x, n) {
               </div>
             ) : (
               data.map((item, ind) => (
-               <CompareCard key={ind} ind={ind} item={item} />
+                <CompareCard key={ind} ind={ind} item={item} />
               ))
             )}
           </div>
@@ -671,7 +768,7 @@ function generateAroundValue(x, n) {
                         User{Math.floor(Math.random() * 1000)}
                       </h3>
                       <h4 className=" text-sm font-bold text-zinc-500">
-                        {new Date(message.createdAt).toISOString()}
+                        {new Date(message.createdAt).toDateString()}
                       </h4>
                     </div>
                     <h2 className=" text-lg font-medium text-white">

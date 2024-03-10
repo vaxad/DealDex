@@ -16,42 +16,42 @@ export default function Home() {
       ),
     },
     {
-      title: "Services",
+      title: "AR Try on",
       value: "services",
       content: (
         <div className="w-full overflow-hidden relative h-full rounded-2xl p-10 text-xl md:text-4xl font-bold text-white bg-gradient-to-br from-blue-700 to-violet-900">
-          <p>Services tab</p>
-          <DummyContent />
+          <p>AR Try on components.</p>
+          <DummyContent2 />
         </div>
       ),
     },
     {
-      title: "Playground",
+      title: "Nearby",
       value: "playground",
       content: (
         <div className="w-full overflow-hidden relative h-full rounded-2xl p-10 text-xl md:text-4xl font-bold text-white bg-gradient-to-br from-gray-700 to-violet-900">
-          <p>Playground tab</p>
-          <DummyContent />
+          <p>Nearby Stores</p>
+          <DummyContent3 />
         </div>
       ),
     },
     {
-      title: "Content",
+      title: "Comparison Tool",
       value: "content",
       content: (
         <div className="w-full overflow-hidden relative h-full rounded-2xl p-10 text-xl md:text-4xl font-bold text-white bg-gradient-to-br from-yellow-700 to-violet-900">
-          <p>Content tab</p>
-          <DummyContent />
+          <p>Real time comparison of 2 similar products </p>
+          <DummyContent4 />
         </div>
       ),
     },
     {
-      title: "Random",
+      title: "Chat Forum",
       value: "random",
       content: (
         <div className="w-full overflow-hidden relative h-full rounded-2xl p-10 text-xl md:text-4xl font-bold text-white bg-gradient-to-br from-purple-700 to-violet-900">
-          <p>Random tab</p>
-          <DummyContent />
+          <p>For Customer Support</p>
+          <DummyContent5 />
         </div>
       ),
     },
@@ -146,7 +146,7 @@ const DummyContent = () => {
 const DummyContent2 = () => {
   return (
     <Image
-      src="/linear.png"
+      src="/try-on.png"
       alt="dummy image"
       width="700"
       height="700"
@@ -157,7 +157,7 @@ const DummyContent2 = () => {
 const DummyContent3 = () => {
   return (
     <Image
-      src="/linear.png"
+      src="/map.jpg"
       alt="dummy image"
       width="700"
       height="700"
@@ -168,7 +168,18 @@ const DummyContent3 = () => {
 const DummyContent4 = () => {
   return (
     <Image
-      src="/linear.png"
+      src="/compare.jpg"
+      alt="dummy image"
+      width="1000"
+      height="1000"
+      className="object-cover object-left-top h-[60%]  md:h-[90%] absolute -bottom-10 inset-x-0 w-[90%] rounded-xl mx-auto"
+    />
+  );
+};
+const DummyContent5 = () => {
+  return (
+    <Image
+      src="/forum.jpg"
       alt="dummy image"
       width="1000"
       height="1000"

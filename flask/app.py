@@ -328,6 +328,8 @@ def scrape_amazon_reviews():
             review["content"] = r.get("content", "")
             reviews_data.append(review)
 
+    # sentiment_analysis_pipeline = pipeline("sentiment-analysis")
+
     review_sentiments = []
     for review in reviews_data:
         sentiment_prediction = sentiment_analysis_pipeline(review['content'])[0]
@@ -374,6 +376,8 @@ def send_whatsapp_review():
                 review["content"] = r.get("content", "")
                 rev += review["content"] + "\n"
                 reviews_data.append(review)
+
+        # sentiment_analysis_pipeline = pipeline("sentiment-analysis")
 
         review_sentiments = []
         for review in reviews_data:
@@ -513,7 +517,7 @@ def get_videos():
             break
         video_details = {
             'videoId': video['videoId'],
-            'thumbnail': video['thumbnail']['thumbnails'][1]["url"],  
+            'thumbnail': video['thumbnail']['thumbnails'][0]["url"],  
             'title': video['title']['runs'][0]['text'],          
             'link': f"https://www.youtube.com/watch?v={video['videoId']}"
         }
