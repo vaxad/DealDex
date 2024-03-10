@@ -36,10 +36,13 @@ const find = async (pdt) => {
             body: JSON.stringify({ url: url.link })
         })
         const data = await res.json()
+
+        if(!data.name)continue
+        try {
         if (!data.error) {
             data.brand = url.domain
             data.link = url.link
-            if (data.price.includes("US $")) {
+            if (data.price.includes("US")) {
                 let temp = data.price.replace("US $", "")
                 temp = (parseFloat(temp) * 83.12).toString()
                 data.price = temp
@@ -64,6 +67,9 @@ const find = async (pdt) => {
                 result.push(savedPdt)
         }
         }
+    } catch (error) {
+        console.log("amazaon blocked you cuh")
+    }
     }
     return result
 }

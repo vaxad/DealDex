@@ -107,14 +107,14 @@ const page = ({ params: { slug } }) => {
   const isBigger = () => {
     if (product.prices && item.prices) {
       if (
-        parseFloat(item.prices[0].price.replace(/\,/g, "")) <=
-        parseFloat(product.prices[0].price.replace(/\,/g, ""))
+        parseFloat(item.prices[0].price.replace(/[^0-9.]+/g, '')) <=
+        parseFloat(product.prices[0].price.replace(/[^0-9.]+/g, ''))
       ) {
         setBigger(1);
-        console.log(parseFloat(item.prices[0].price.replace(/\,/g, "")));
+        console.log(parseFloat(item.prices[0].price.replace(/[^0-9.]+/g, '')));
         return 1;
       } else {
-        console.log(parseFloat(product.prices[0].price.replace(/\,/g, "")));
+        console.log(parseFloat(product.prices[0].price.replace(/[^0-9.]+/g, '')));
         return 0;
       }
     }
@@ -166,8 +166,8 @@ const page = ({ params: { slug } }) => {
     uploadImage(data.product.images[0])
     data.others.sort((a, b) => {
       return (
-        parseFloat(a.prices[0].price.replace(/\,/g, "")) -
-        parseFloat(b.prices[0].price.replace(/\,/g, ""))
+        parseFloat(a.prices[0].price.replace(/[^0-9.]+/g, '')) -
+        parseFloat(b.prices[0].price.replace(/[^0-9.]+/g, ''))
       );
     });
     setData(data.others);
@@ -184,8 +184,8 @@ const page = ({ params: { slug } }) => {
       setItem(data[compare]);
       if (product.prices) {
         setBigger(
-          parseFloat(data[compare].prices[0].price.replace(/\,/g, "")) >=
-            parseFloat(product.prices[0].price.replace(/\,/g, ""))
+          parseFloat(data[compare].prices[0].price.replace(/[^0-9.]+/g, '')) >=
+            parseFloat(product.prices[0].price.replace(/[^0-9.]+/g, ''))
             ? 1
             : 0
         );
@@ -202,11 +202,108 @@ const page = ({ params: { slug } }) => {
     }
   };
   const handleScrollToCompare = () => {
-    const productsDiv = document.querySelector("#compare");
-    if (productsDiv) {
-      productsDiv.scrollIntoView({ behavior: "smooth" });
-    }
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
+
+  function extractNumbers(str) {
+    return str.replace(/[^0-9.]+/g, '');
+
+  }
+
+  const CompareCard = ({item, ind}) => {
+    const [err, setErr] = useState(false)
+    return !err&&(
+      <CardContainer key={item._id} className="inter-var w-full">
+      <CardBody className="bg-gray-50 relative group/card  dark:hover:shadow-2xl dark:hover:shadow-emerald-500/[0.1] dark:bg-black dark:border-white/[0.2] border-black/[0.1] w-auto sm:w-[30rem] h-fit rounded-xl p-6 border  ">
+        <CardItem
+          translateZ="100"
+          className="w-full h-60 my-5  relative rounded-xl flex overflow-clip"
+        >
+          <img
+            src={item.images[0]}
+            height="1000"
+            width="1000"
+            onError={()=>setErr(true)}
+            className="  top-0 w-full absolute blur-sm opacity-60 -z-10 object-contain mb-2 rounded-xl group-hover/card:shadow-xl"
+            alt="thumbnail"
+          />
+          <img
+            src={item.images[0]}
+            height="1000"
+            width="1000"
+            onError={()=>setErr(true)}
+            className="  top-0 h-full object-contain mb-2 rounded-xl group-hover/card:shadow-xl"
+            alt="thumbnail"
+          />
+        </CardItem>
+        <CardItem
+          translateZ="50"
+          className="text-xl font-bold text-neutral-600 dark:text-white line-clamp-2"
+        >
+          {item.name}
+        </CardItem>
+        <CardItem
+          as="p"
+          translateZ="60"
+          className="text-neutral-500 text-sm max-w-sm mb-2 dark:text-neutral-300 line-clamp-1"
+        >
+          {item.description}
+        </CardItem>
+        <CardItem
+          as="p"
+          translateZ="60"
+          className="text-neutral-500 text-sm max-w-sm mb-6 dark:text-neutral-300"
+        >
+          <Link href={item.brand} className="flex gap-1">
+            {" "}
+            <span> source: </span>
+            <div className="underline">{item.brand}</div>{" "}
+          </Link>
+        </CardItem>
+        <CardItem
+          translateZ="50"
+          className="text-2xl font-bold text-neutral-600 dark:text-white"
+        >
+          {item.prices.length > 0 && (
+            <span>
+              Rs{" "}
+              {Math.floor(item.prices[0].price) ||
+                item.prices[0].price}{" "}
+              /-
+            </span>
+          )}
+        </CardItem>
+        <div className="flex justify-around items-center mt-2 gap-2">
+          <Link href={item.link} target="_blank" className="w-6/12">
+            <CardItem
+              translateZ={20}
+              as="button"
+              className="px-4 py-4 w-full rounded-xl text-md font-normal dark:text-white border "
+            >
+              Visit →
+            </CardItem>
+          </Link>
+          <div
+            href={`/search/${item._id}`}
+            className=" flex w-6/12 cursor-pointer"
+            onClick={() => {
+              setCompare(ind);
+              handleScrollToCompare();
+            }}
+          >
+            <CardItem
+              translateZ={20}
+              as="button"
+              className="px-4 py-4 flex items-center justify-center mx-auto text-center w-full  rounded-xl bg-black dark:bg-white dark:text-black text-white text-md font-bold"
+            >
+              Compare <img src="/compare.png" alt="" />
+            </CardItem>
+          </div>
+        </div>
+      </CardBody>
+    </CardContainer>
+    )
+  }
   return (
     <>
       <div className="px-10 max-sm:px-4">
@@ -226,14 +323,14 @@ const page = ({ params: { slug } }) => {
             Compare Products across websites{" "}
           </p>
         </div>
-        {product && (
+        {(
           <div className={`grid grid-cols-1 md:grid-cols-2 gap-4 `}>
             <div
               className={` w-full my-2 flex-col rounded-xl bg-gradient-to-b transition-all delay-500 duration-700 from-zinc-900 border border-opacity-45 to-black h-fit ${
-                bigger === 1 ? "fancy border-[#F3FF74] scale-105" : "scale-95"
+                bigger === 1 ? "fancy border-[#F3FF74] scale-[102%]" : "scale-[98%]"
               }`}
             >
-              <div className="flex w-full">
+              {product._id?<div className="flex w-full">
                 <div className="h-full flex-grow w-1/2 flex items-center">
                   <div className="w-full h-60 relative rounded-l-xl items-center justify-center flex overflow-clip">
                     <img
@@ -262,7 +359,7 @@ const page = ({ params: { slug } }) => {
                           Rs{" "}
                           {Math.floor(
                             parseFloat(
-                              product.prices[0].price.replace(/\,/g, "")
+                              extractNumbers(product.prices[0].price)
                             )
                           )}{" "}
                           /-
@@ -285,6 +382,8 @@ const page = ({ params: { slug } }) => {
                   </div>
                 </div>
               </div>
+              :<Loading></Loading>}
+
               {product.prices ? (
                 <>
                   <div className="p-4 w-full col-span-2">
@@ -303,8 +402,8 @@ const page = ({ params: { slug } }) => {
                 <div
                   className={` w-full my-2 flex-col rounded-xl bg-gradient-to-b transition-all delay-500 duration-700 from-zinc-900 border border-opacity-45 to-black h-fit ${
                     bigger === 0
-                      ? "fancy border-[#F3FF74] scale-105"
-                      : "scale-95"
+                      ? "fancy border-[#F3FF74] scale-[102%]"
+                      : "scale-[98%]"
                   }`}
                 >
                   <div className="flex w-full">
@@ -336,7 +435,7 @@ const page = ({ params: { slug } }) => {
                               Rs{" "}
                               {Math.floor(
                                 parseFloat(
-                                  item.prices[0].price.replace(/\,/g, "")
+                                  extractNumbers(item.prices[0].price)
                                 )
                               )}{" "}
                               /-
@@ -404,93 +503,7 @@ const page = ({ params: { slug } }) => {
               </div>
             ) : (
               data.map((item, ind) => (
-                <CardContainer key={item._id} className="inter-var w-full">
-                  <CardBody className="bg-gray-50 relative group/card  dark:hover:shadow-2xl dark:hover:shadow-emerald-500/[0.1] dark:bg-black dark:border-white/[0.2] border-black/[0.1] w-auto sm:w-[30rem] h-fit rounded-xl p-6 border  ">
-                    <CardItem
-                      translateZ="100"
-                      className="w-full h-60 my-5  relative rounded-xl flex overflow-clip"
-                    >
-                      <img
-                        src={item.images[0]}
-                        height="1000"
-                        width="1000"
-                        className="  top-0 w-full absolute blur-sm opacity-60 -z-10 object-contain mb-2 rounded-xl group-hover/card:shadow-xl"
-                        alt="thumbnail"
-                      />
-                      <img
-                        src={item.images[0]}
-                        height="1000"
-                        width="1000"
-                        className="  top-0 h-full object-contain mb-2 rounded-xl group-hover/card:shadow-xl"
-                        alt="thumbnail"
-                      />
-                    </CardItem>
-                    <CardItem
-                      translateZ="50"
-                      className="text-xl font-bold text-neutral-600 dark:text-white line-clamp-2"
-                    >
-                      {item.name}
-                    </CardItem>
-                    <CardItem
-                      as="p"
-                      translateZ="60"
-                      className="text-neutral-500 text-sm max-w-sm mb-2 dark:text-neutral-300 line-clamp-1"
-                    >
-                      {item.description}
-                    </CardItem>
-                    <CardItem
-                      as="p"
-                      translateZ="60"
-                      className="text-neutral-500 text-sm max-w-sm mb-6 dark:text-neutral-300"
-                    >
-                      <Link href={item.brand} className="flex gap-1">
-                        {" "}
-                        <span> source: </span>
-                        <div className="underline">{item.brand}</div>{" "}
-                      </Link>
-                    </CardItem>
-                    <CardItem
-                      translateZ="50"
-                      className="text-2xl font-bold text-neutral-600 dark:text-white"
-                    >
-                      {item.prices.length > 0 && (
-                        <span>
-                          Rs{" "}
-                          {Math.floor(item.prices[0].price) ||
-                            item.prices[0].price}{" "}
-                          /-
-                        </span>
-                      )}
-                    </CardItem>
-                    <div className="flex justify-around items-center mt-2 gap-2">
-                      <Link href={item.link} target="_blank" className="w-6/12">
-                        <CardItem
-                          translateZ={20}
-                          as="button"
-                          className="px-4 py-4 w-full rounded-xl text-md font-normal dark:text-white border "
-                        >
-                          Visit →
-                        </CardItem>
-                      </Link>
-                      <div
-                        href={`/search/${item._id}`}
-                        className=" flex w-6/12 cursor-pointer"
-                        onClick={() => {
-                          setCompare(ind);
-                          handleScrollToCompare();
-                        }}
-                      >
-                        <CardItem
-                          translateZ={20}
-                          as="button"
-                          className="px-4 py-4 flex items-center justify-center mx-auto text-center w-full  rounded-xl bg-black dark:bg-white dark:text-black text-white text-md font-bold"
-                        >
-                          Compare <img src="/compare.png" alt="" />
-                        </CardItem>
-                      </div>
-                    </div>
-                  </CardBody>
-                </CardContainer>
+               <CompareCard key={ind} ind={ind} item={item} />
               ))
             )}
           </div>
