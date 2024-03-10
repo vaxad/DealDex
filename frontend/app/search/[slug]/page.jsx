@@ -129,6 +129,7 @@ const page = ({ params: { slug } }) => {
   const [msg, setMsg] = React.useState("");
   const [category, setCategory] = React.useState("");
   const [coupons, setCoupons] = React.useState({});
+  const [reviews, setReviews] = React.useState([])
   const [showCoupons, setShowCoupons] = React.useState(false);
   const url = process.env.NEXT_PUBLIC_API_URL;
   const flask = process.env.NEXT_PUBLIC_FLASK_URL;
@@ -258,12 +259,78 @@ const page = ({ params: { slug } }) => {
           label: "Price Line",
           data: result,
           fill: false,
-          backgroundColor: "rgb(255, 99, 132)",
-          borderColor: "rgba(255, 99, 132, 0.2)",
+          backgroundColor: "rgb(30, 52, 255)",
+          borderColor: "rgba(0, 13, 131, 1)",
         },
       ],
     });
   };
+
+  const handleYt = async (name) => {
+    const form = new FormData();
+    form.append('product_name',name);
+    const res = await fetch(`${flask}/get_videos`,{
+      method:'POST',
+      body:form
+    });
+    const data = await res.json();
+    console.log(data);
+    setReviews(data.videos);
+  };
+
+  const YtCard = ({item}) => {
+    const [err, setErr] = useState(false)
+  return !err&&(
+    <CardContainer key={item.videoId} className="inter-var">
+      <CardBody className="bg-gray-50 relative group/card  dark:hover:shadow-2xl dark:hover:shadow-emerald-500/[0.1] dark:bg-black dark:border-white/[0.2] border-black/[0.1] w-full h-fit rounded-xl p-6 border  ">
+        <CardItem
+          translateZ="100"
+          className="w-full h-60 my-5  relative rounded-xl flex overflow-clip"
+        >
+          <img
+            src={item.thumbnail}
+            height="1000"
+            onError={()=>setErr(true)}
+            width="1000"
+            className="  top-0 w-full absolute blur-sm opacity-60 -z-10 object-contain mb-2 rounded-xl group-hover/card:shadow-xl"
+            alt="thumbnail"
+          />
+          <img
+            src={item.thumbnail}
+            height="1000"
+            width="1000"
+            onError={()=>setErr(true)}
+            className="  top-0 h-full object-contain mb-2 rounded-xl group-hover/card:shadow-xl"
+            alt="thumbnail"
+          />
+        </CardItem>
+        <CardItem
+          translateZ="50"
+          className="text-xl font-bold text-neutral-600 dark:text-white line-clamp-2"
+        >
+          {item.title}
+        </CardItem>
+        <div className="flex w-full justify-center items-center mt-2 gap-2">
+          <a
+            href={item.link}
+            target="_blank"
+            className=" flex w-full"
+          >
+            <CardItem
+              translateZ={20}
+              as="button"
+              className="px-4 py-4 flex items-center justify-center mx-auto text-center w-full  rounded-xl bg-black dark:bg-white dark:text-black text-white text-md font-bold"
+            >
+              View
+              {/* <img src="/expand.png" alt="" className="ml-2" /> */}
+            </CardItem>
+          </a>
+        </div>
+      </CardBody>
+    </CardContainer>
+  
+  )}
+
   const getData = async () => {
     const res = await fetch(`${url}/api/price/fetch/${slug}`);
     const data = await res.json();
@@ -285,6 +352,7 @@ const page = ({ params: { slug } }) => {
     if (data.product.brand.includes("flipkart")) {
       getCoupon();
     }
+    handleYt(data.product.name);
   };
 
   useEffect(() => {
@@ -415,9 +483,9 @@ const page = ({ params: { slug } }) => {
   return (
     <>
       {coupons.deals ? (
-        <div className=" fixed z-30 bottom-10 right-5 flex flex-col gap-2 justify-end items-end">
-          <div
-            className={`flex flex-col gap-2 w-full items-center overflow-y-scroll max-h-[50vh] ${
+        <div className={`fixed  bottom-10 z-10  right-5 flex flex-col gap-2 justify-end items-end`}>
+        {showCoupons?<div
+            className={`flex flex-col ${showCoupons?" z-30":" z-0"} border border-slate-50 gap-2 w-full items-center overflow-y-scroll max-h-[50vh] ${
               showCoupons ? " scale-y-100" : "scale-y-0"
             } origin-bottom-right transition-all md:w-[40vw] md:max-h[60vh] p-5 rounded-xl bg-black`}
           >
@@ -436,12 +504,12 @@ const page = ({ params: { slug } }) => {
                 </div>
               );
             })}
-          </div>
+          </div>:<></>}
           <button
             onClick={() => {
               setShowCoupons(!showCoupons);
             }}
-            className="rounded-full w-fit aspect-square p-2 bg-zinc-900 border border-slate-50"
+            className="rounded-full z-30 w-fit aspect-square p-2 bg-zinc-900 border border-slate-50"
           >
             <h2 className=" text-lg font-semibold">Coupons</h2>
           </button>
@@ -465,6 +533,7 @@ const page = ({ params: { slug } }) => {
           <p className="text-zinc-500 mt-2 mb-4 dark:text-zinc-400">
             Compare Products across websites{" "}
           </p>
+          
         </div>
         {
           <div className={`grid grid-cols-1 md:grid-cols-2 gap-4 `}>
@@ -634,7 +703,20 @@ const page = ({ params: { slug } }) => {
             )}
           </div>
         }
-        <div className="mt-10">
+        {reviews.length>0?<div className="mt-4">
+          <h1
+            id="compare"
+            className="text-4xl max-sm:text-2xl font-bold text-zinc-500 dark:text-zinc-200"
+          >
+            Product Reviews:
+          </h1>
+          <div className=" pt-5 pb-24  w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12">
+            {
+              reviews.map((item) => <YtCard item={item} key={item._id} /> )
+            }
+          </div>
+          </div>:<></>}
+        <div className="mt-4">
           <h1
             id="products"
             className="text-4xl font-bold text-zinc-500 dark:text-zinc-200"
@@ -686,7 +768,7 @@ const page = ({ params: { slug } }) => {
                         User{Math.floor(Math.random() * 1000)}
                       </h3>
                       <h4 className=" text-sm font-bold text-zinc-500">
-                        {new Date(message.createdAt).toISOString()}
+                        {new Date(message.createdAt).toDateString()}
                       </h4>
                     </div>
                     <h2 className=" text-lg font-medium text-white">

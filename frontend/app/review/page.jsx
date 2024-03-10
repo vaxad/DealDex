@@ -9,45 +9,49 @@ import Dictaphone from "../components/Dictaphone";
 
 const page = () => {
   const url = process.env.NEXT_PUBLIC_API_URL;
+  const flask = process.env.NEXT_PUBLIC_FLASK_URL;
   const [search, setSearch] = React.useState("");
-  const [loading, setLoading] = React.useState(true);
+  const [loading, setLoading] = React.useState(false);
   const [searchData, setSearchData] = React.useState([]);
 
   const getData = async () => {
     const res = await fetch(`${url}/api/price/`);
     const data = await res.json();
     console.log(data);
-    if(data.length>0){
-      setSearchData(data);
-    }
-    setLoading(false);
-  };
-
-  useEffect(() => {
-    getData();
-  }, []);
-
-  const handleSubmit = async (e) => {
-    setLoading(true);
-    e.preventDefault();
-    const res = await fetch(`${url}/api/price/find/${search}`);
-    const data = await res.json();
-    console.log(data);
     setSearchData(data);
     setLoading(false);
   };
 
-  const SearchCard = ({item}) => {
+  useEffect(() => {
+    // getData();
+  }, []);
+
+  const handleYt = async (e) => {
+    setLoading(true);
+    e.preventDefault();
+    const form = new FormData();
+    form.append('product_name',search);
+    const res = await fetch(`${flask}/get_videos`,{
+      method:'POST',
+      body:form
+    });
+    const data = await res.json();
+    console.log(data);
+    setSearchData(data.videos);
+    setLoading(false);
+  };
+
+  const YtCard = ({item}) => {
     const [err, setErr] = useState(false)
   return !err&&(
-    <CardContainer key={item._id} className="inter-var">
+    <CardContainer key={item.videoId} className="inter-var">
       <CardBody className="bg-gray-50 relative group/card  dark:hover:shadow-2xl dark:hover:shadow-emerald-500/[0.1] dark:bg-black dark:border-white/[0.2] border-black/[0.1] w-full h-fit rounded-xl p-6 border  ">
         <CardItem
           translateZ="100"
           className="w-full h-60 my-5  relative rounded-xl flex overflow-clip"
         >
           <img
-            src={item.images[0]}
+            src={item.thumbnail}
             height="1000"
             onError={()=>setErr(true)}
             width="1000"
@@ -55,7 +59,7 @@ const page = () => {
             alt="thumbnail"
           />
           <img
-            src={item.images[0]}
+            src={item.thumbnail}
             height="1000"
             width="1000"
             onError={()=>setErr(true)}
@@ -67,62 +71,23 @@ const page = () => {
           translateZ="50"
           className="text-xl font-bold text-neutral-600 dark:text-white line-clamp-2"
         >
-          {item.name}
+          {item.title}
         </CardItem>
-        <CardItem
-          as="p"
-          translateZ="60"
-          className="text-neutral-500 text-sm max-w-sm mb-6 dark:text-neutral-300 line-clamp-1"
-        >
-          {item.description}
-        </CardItem>
-        <CardItem
-          as="p"
-          translateZ="60"
-          className="text-neutral-500 text-sm max-w-sm mb-6 dark:text-neutral-300"
-        >
-          <Link href={item.brand} className="flex gap-1">
-            {" "}
-            <span> source: </span>
-            <div className="underline">{item.brand}</div>{" "}
-          </Link>
-        </CardItem>
-        <CardItem
-          translateZ="50"
-          className="text-2xl font-bold text-neutral-600 dark:text-white"
-        >
-          {item.prices.length > 0 && (
-            <span>
-              Rs{" "}
-              {Math.floor(item.prices[0].price) ||
-                item.prices[0].price}{" "}
-              /-
-            </span>
-          )}
-        </CardItem>
-        <div className="flex justify-around items-center mt-2 gap-2">
-          <Link href={item.link} target="_blank" className="w-6/12">
-            <CardItem
-              translateZ={20}
-              as="button"
-              className="px-4 py-4 w-full rounded-xl text-md font-normal dark:text-white border "
-            >
-              Visit →
-            </CardItem>
-          </Link>
-          <Link
-            href={`/search/${item._id}`}
-            className=" flex w-6/12"
+        <div className="flex w-full justify-center items-center mt-2 gap-2">
+          <a
+            href={item.link}
+            target="_blank"
+            className=" flex w-full"
           >
             <CardItem
               translateZ={20}
               as="button"
               className="px-4 py-4 flex items-center justify-center mx-auto text-center w-full  rounded-xl bg-black dark:bg-white dark:text-black text-white text-md font-bold"
             >
-              Expand{" "}
-              <img src="/expand.png" alt="" className="ml-2" />
+              View
+              {/* <img src="/expand.png" alt="" className="ml-2" /> */}
             </CardItem>
-          </Link>
+          </a>
         </div>
       </CardBody>
     </CardContainer>
@@ -141,7 +106,7 @@ const page = () => {
             Search
           </h1>
           <p className="text-zinc-500 mt-2 dark:text-zinc-400">
-            Search for the products you want to compare
+            Search for the products you want to a review analysis about!
           </p>
           <div className=" flex flex-row gap-4 items-center">
           <form
@@ -177,16 +142,16 @@ const page = () => {
           </div>
         </div>
         <div className="mt-10">
-          <h1 className="text-4xl max-sm:text-2xl font-bold text-zinc-500 dark:text-zinc-200">
+          {/* <h1 className="text-4xl max-sm:text-2xl font-bold text-zinc-500 dark:text-zinc-200">
             Popular Searches
-          </h1>
+          </h1> */}
           <div className=" pt-5 pb-24  w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12">
             {loading ? (
               <div className=" col-span-1 md:col-span-2 lg:col-span-3">
                 <Loading />
               </div>
             ) : (
-              searchData.map((item) => <SearchCard item={item} key={item._id} /> )
+              searchData.map((item) => <YtCard item={item} key={item._id} /> )
             )}
           </div>
         </div>
