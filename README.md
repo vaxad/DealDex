@@ -1,3 +1,6 @@
+16
+![image](https://res.cloudinary.com/db670bhmc/image/upload/v1712339572/gjxmvcox012ogy2nbpo8.png)
+
 # DealDex
 
 ## Problem Statement
